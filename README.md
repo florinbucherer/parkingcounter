@@ -13,6 +13,12 @@ The main goal is to create a working prototype (MVP) that:
 *   Displays the current number of available parking spaces via a **User Interface**.
 *   Provides data for later evaluation.
 
+| Basisanforderung | Leistungsanforderungen | Begeisterungsanforderungen |
+| --- | --- | --- |
+| User interface (clear, readable, real-time display) | Car park statistics (occupancy rate by the hour, 24/7 statistics) | Intelligent detection (vehicle type) |
+| Count the number of parking spaces available (automatic update, error-proofing) | System performance (update <1s, low error rate) | User guidance (available car parks, mobile app) |
+| Camera detection (input/output, reliability) | | Optimisation (predictions, alerts) |
+
 ### 1.3 MVP (Minimum Viable Product)
 *   **Control unit:** A computer that can run Python
 *   **Sensors:** A Webcam
