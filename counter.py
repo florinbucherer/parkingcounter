@@ -6,13 +6,13 @@ class PCounter:
 
     def __init__(self, capacity: int, occupied: int = 0):
         self.capacity = capacity
-        self.occupied = max(0, min(capacity, occupied))
+        self.occupied = max(0, occupied)
 
     def set_capacity(self, capacity: int):
         self.capacity = capacity
 
     def apply(self, direction: Direction):
-        self.occupied = max(0, min(self.capacity, self.occupied + direction.value))
+        self.occupied = max(0, self.occupied + direction.value)
 
     @property
     def free(self) -> int:
