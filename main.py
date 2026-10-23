@@ -1,7 +1,7 @@
 import time
 
-from test_sensor import FakeSensor        # Test sensor: swap for real sensor
-from test_ui import ConsoleUI          # Test UI: swap for real UI
+from dummy_sensor import FakeSensor        # Test sensor: swap for real sensor
+from dummy_ui import ConsoleUI          # Test UI: swap for real UI
 from counter import PCounter
 
 
