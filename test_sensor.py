@@ -2,10 +2,10 @@ import random
 import threading
 import time
 
-from sensor import Sensor, Direction
+from sensor_interface import ISensor, Direction
 
 
-class FakeSensor(Sensor):
+class FakeSensor(ISensor):
     """Emits random IN/OUT events. For developing without a camera."""
 
     def __init__(self, events: list):
