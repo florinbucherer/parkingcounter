@@ -251,4 +251,5 @@ Das System erfüllt alle Anforderungen des Pflichtenhefts. Die agile Vorgehenswe
 -->
 ## 8. Diagramme
 
-![Use Case Diagramm](./graphics/Use_case_diagramm.svg)
+![Use Case Diagramm](graphics/Use_case_diagramm.svg)
+
