@@ -249,3 +249,6 @@ def get_filtered_distance(self):
 ### Fazit der Arbeit
 Das System erfüllt alle Anforderungen des Pflichtenhefts. Die agile Vorgehensweise half, technische Hürden bei der Sensorkalibrierung frühzeitig zu erkennen.
 -->
+## 8. Diagramme
+
+![Use Case Diagramm](./graphics/Use_case_diagramm.svg)
