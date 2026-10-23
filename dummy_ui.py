@@ -1,9 +1,9 @@
 import threading
 
-from ui import UI
+from ui_interface import IUI
 
 
-class ConsoleUI(UI):
+class ConsoleUI(IUI):
     """Prints the result to the console.
 
     At start it asks for the capacity and for the cars already inside.

@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 
 
-class UI(ABC):
+class IUI(ABC):
     """Interface (superclass) for every user interface.
 
     The UI shows the result and owns the capacity setting.

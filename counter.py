@@ -1,4 +1,4 @@
-from sensor import Direction
+from sensor_interface import Direction
 
 
 class PCounter:

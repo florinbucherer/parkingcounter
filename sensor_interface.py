@@ -7,7 +7,7 @@ class Direction(Enum):
     OUT = -1
 
 
-class Sensor(ABC):
+class ISensor(ABC):
     """Interface (superclass) for every sensor.
 
     A sensor appends a Direction event to the list it is given
