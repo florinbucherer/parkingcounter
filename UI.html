@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Parking Management System</title>
+    <style>
+        /* Design of the HTML page */
+        body {
+            background-image: url("{{ url_for('static', filename='parking.jpg') }}");
+            background-repeat: no-repeat;
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            font-family: Arial, sans-serif;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.92);
+            padding: 30px;
+            border-radius: 12px;
+            width: 420px;
+            margin: 50px auto;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            text-align: center;
+        }
+
+        .capacity-control {
+            margin: 20px 0;
+            padding: 15px;
+            background: #eef2f5;
+            border-radius: 8px;
+        }
+
+        .capacity-control input {
+            padding: 8px;
+            width: 90px;
+            font-size: 16px;
+            text-align: center;
+        }
+
+        .capacity-control button {
+            padding: 8px 16px;
+            font-size: 15px;
+            background-color: #2c3e50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .capacity-control button:hover {
+            background-color: #34495e;
+        }
+
+        .stat-line {
+            color: #2c3e50;
+            margin: 15px 0;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="card">
+        <h1>Parking Counter</h1>
+
+        <!-- Section pour modifier la capacité -->
+        <div class="capacity-control">
+            <label for="input-capacity"><strong>Set Total Capacity:</strong></label><br><br>
+            <input type="number" id="input-capacity" min="1" placeholder="e.g. 50">
+            <button onclick="submitCapacity()">Update</button>
+        </div>
+
+        <!-- Affichage des statistiques -->
+        <h2 class="stat-line">Available Spaces: <span id="free">0</span></h2>
+        <h2 class="stat-line">Occupied Spaces: <span id="occupied">0</span></h2>
+        <h2 class="stat-line">Total Capacity: <span id="capacity">0</span></h2>
+    </div>
+
+    <script>
+        // Fonction pour récupérer les données du serveur Flask
+        async function fetchParkingData() {
+            try {
+                const response = await fetch("/data");
+                if (!response.ok) throw new Error("Failed to fetch server data");
+                
+                const data = await response.json();
+
+                document.getElementById("capacity").textContent = data.capacity;
+                document.getElementById("occupied").textContent = data.occupied;
+                document.getElementById("free").textContent = data.free;
+            } catch (error) {
+                console.error("Error fetching parking data:", error);
+            }
+        }
+
+        // Fonction pour envoyer la nouvelle capacité au serveur
+        async function submitCapacity() {
+            const inputField = document.getElementById("input-capacity");
+            const newCapacity = parseInt(inputField.value);
+
+            if (isNaN(newCapacity) || newCapacity < 0) {
+                alert("Please enter a valid positive number for capacity.");
+                return;
+            }
+
+            try {
+                const response = await fetch("/set_capacity", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({ capacity: newCapacity })
+                });
+
+                if (response.ok) {
+                    inputField.value = ""; 
+                    await fetchParkingData(); 
+                } else {
+                    alert("Error setting capacity on server.");
+                }
+            } catch (error) {
+                console.error("Error submitting capacity:", error);
+            }
+        }
+
+        // Charger les données au démarrage
+        fetchParkingData();
+
+        // Rafraîchir toutes les 60 secondes (60000 ms)
+        setInterval(fetchParkingData, 60000);
+    </script>
+</body>
+</html>
