@@ -1,33 +1,32 @@
 <style>
-  /* Alles in die Mitte des Bildschirms */
+  /* Css to format the content */
   body { margin: 0; height: 100vh; display: flex; flex-direction: column;
          justify-content: center; align-items: center; text-align: center; font-family: sans-serif; }
 </style>
 
-<!-- Einstellungen: sichtbar, bis die Zahlen abgeschickt wurden -->
+<!-- Settings Menu to initalize the capacity and initiallyoccupied lots -->
 <div id="settings">
   <h1>Settings</h1>
   Total parking lots: <input id="capacity" type="number" min="1" value="50"><br><br>
   Already occupied: <input id="occupied" type="number" min="0" value="0"><br><br>
-  <button onclick="save()">Start</button>
+  <button onclick="save()">Start</button> <!-- run the function save() when the button is pressed -->
 </div>
 
-<!-- Anzeige: sichtbar, sobald Python die Zahlen hat -->
+<!-- The actual counter content-->
 <div id="display" style="display: none">
   <h1>Free parking lots</h1>
   <h1 id="numbers" style="font-size: 80px"></h1>
 </div>
 
 <script>
-  // Zahlen an Python schicken, z.B. /set/50/10
+  // the function to send the settings to the python script with the keyword "set"
   function save() {
     const capacity = document.getElementById("capacity").value;
     const occupied = document.getElementById("occupied").value;
     fetch("/set/" + capacity + "/" + occupied);
   }
 
-  // Alle 0,5 Sekunden Text (z.B. "40 / 50") von Python holen.
-  // Ist er leer, wurde noch nichts eingestellt: dann bleibt das Formular sichtbar.
+  // get the status from the Python script every 0.5 seconds
   setInterval(async () => {
     const text = await (await fetch("/status")).text();
     document.getElementById("settings").style.display = text ? "none" : "block";
