@@ -13,7 +13,7 @@ The main goal is to create a working prototype (MVP) that:
 *   Displays the current number of available parking spaces via a **User Interface**.
 *   Provides data for later evaluation.
 
-| Basisanforderung | Leistungsanforderungen | Begeisterungsanforderungen |
+| Basic Requirements | Performance Requirements | Enthusiastic Requirements |
 | --- | --- | --- |
 | User interface (clear, readable, real-time display) | Car park statistics (occupancy rate by the hour, 24/7 statistics) | Intelligent detection (vehicle type) |
 | Count the number of parking spaces available (automatic update, error-proofing) | System performance (update <1s, low error rate) | User guidance (available car parks, mobile app) |
@@ -24,6 +24,7 @@ The main goal is to create a working prototype (MVP) that:
 *   **Sensors:** A Webcam
 *   **Output:** User Interface
 *   **Software:** Python script using a image detection library.
+The Product should fullfill as a minimum the Basic Requirements.
 
 ### 1.4 Constraints
 *   Programming language: **Python**.
@@ -34,7 +35,7 @@ The main goal is to create a working prototype (MVP) that:
 
 ## 2. Build Instructions
 To set up the project locally, follow these steps:
-1.  **Clone the repository:** `git clone https://github.com/username/parkfeld-detektor.git`
+1.  **Clone the repository:** `git clone https://github.com/florinbucherer/parkingcounter`
 2.  **Create a virtual environment:** `python -m venv venv`
 3.  **Install dependencies:** `pip install -r requirements.txt`
 4.  **Start the application:** ....
@@ -42,9 +43,9 @@ To set up the project locally, follow these steps:
 ---
 
 ## 3. Brief User Guide
-1.  Start the Programm
-2.  Open the User Interface
-3.  Point your webcam at the entrance to the parking lot
+1.  Start the Programm (The User Interface will open Autmatically)
+2.  Enter number of Parking lots and number of already occupied parking lots at start and press start.
+3.  Point your webcam at the entrance of the parking Area.
 
 ---
 
@@ -66,17 +67,15 @@ To set up the project locally, follow these steps:
     - Testing the software 
 ---
 
-## 5. User Stories
-Requirements are described in the form of user stories with acceptance criteria:
-
-| ID | User Story | Acceptance Criterion | Effort (SP) | Priority |
-| :--- | :--- | :--- | :--- | :--- |
-| **US0** | As a product owner, I want to set up the project initially (GitHub repository, Jira project, release plan, Hello World), so the team can start development efficiently. | Repository and Jira project are created, all team members have access, the repository is cloned locally, and a “Hello World” runs on every computer. | 5 | High |
-| **US1** | As a driver, I want to see from the user Interface how many free parking lots are available. | User Interface works and shows the number of available spaces. | 5 | High |
-| **US2** | As an operator, I want reliable detection. | Correct status change in 10/10 test cases. | 8 | Medium |
-
 ## 6. Sprint 0 Documentation (Preparation & Setup)
 Sprint 0 focused on creating the organizational and technical foundation for developing the parking space occupancy detector.
+
+### User Stories
+| ID | User Story | Acceptance Criterion | Effort (SP) | Priority |
+| :--- | :--- | :--- | :--- | :--- |
+| **SCRUM-26** | As a product owner, I want to set up the project initially (GitHub repository, Jira project, Hello World), so the team can start development efficiently. | Repository and Jira project are created, local clones are set up on each computer, and "Hello World" executes successfully. | 4 | Highest |
+| **SCRUM-28** | As a Scrum Master, I want to do a clear timeline, to have an organized project. | Timeline and deadlines are defined for each user story and task, and organized into sprints. | 2 | Medium |
+| **SCRUM-29** | As a Scrum Master, I want to set priorities for the project to work well. | Priorities are defined for each user story and arranged across the planned sprints. | 3 | Medium |
 
 ### Task List for Sprint 0:
 *   **Requirements analysis:** Creation and definition of the initial **user stories** and setting the **MVP scope**.
@@ -100,7 +99,7 @@ Sprint 0 focused on creating the organizational and technical foundation for dev
 ### Results of Sprint 0
 *   **Release plan:** Creation of an initial timeline and definition of the expansion stages.
 *   **Documentation foundation:** The Documentation is created on Github as readme.md and initial structure is added to fill out later.
-*   **Technical framework:** Decision which image recognition library to use
+*   **Technical framework:** Decision which image recognition library to use and how to structure the code and data flow.
 *   **Documentation:** Fill the first chapters in Readme.md.
 
 ### Enrichment of the User Stories for the Implementation
@@ -116,7 +115,15 @@ Sprint 0 focused on creating the organizational and technical foundation for dev
  ## 7. Sprint 1 Documentation (MVP Implementation)
 
 
-In this sprint, the **Minimum Viable Product** was realized: the basic functionality for distance measurement and visual signaling for two parking spaces.
+In this sprint, the **Minimum Viable Product** was realized: the basic functionality to count the car and show the available parking lots in a UI.
+
+### User Stories
+| ID | User Story | Acceptance Criterion | Effort (SP) | Priority |
+| :--- | :--- | :--- | :--- | :--- |
+| **SCRUM-23** | As a coder, I want to find a working car recognition system that can detect if a car goes into the parking lot or goes out. | A suitable car recognition system is selected, set up, and verified with test footage to reliably detect ingress and egress. | 4 | Highest |
+| **SCRUM-39** | As a user, I want to have a working and accessible UI everywhere and on phone or PC that is able to show me in real time if a parking space is free. | Base UI is created, input interface from the counter is connected, input signals are processed, and real-time availability displays on phone and desktop. | 7 | Highest |
+| **SCRUM-42** | As a coder, I want to build a working counter that can count how many cars go in and out the parking lot so that it can be sent to the UI. | Counter class with calculation logic is implemented and passes standalone automated testing with test scripts. | 5 | Highest |
+| **SCRUM-43** | As a coder, I want to connect the counter to the car recognition system, for it to be able to count with a digital camera and other systems. | Standardized interfaces connect camera sensor, counter, and UI; main application runs and passes integration tests. | 5 | High |
 
 ### 7.1 Task List (Estimation in Hours)
 
