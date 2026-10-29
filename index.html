@@ -1,0 +1,36 @@
+<style>
+  /* Css to format the content */
+  body { margin: 0; height: 100vh; display: flex; flex-direction: column;
+         justify-content: center; align-items: center; text-align: center; font-family: sans-serif; }
+</style>
+
+<!-- Settings Menu to initalize the capacity and initiallyoccupied lots -->
+<div id="settings">
+  <h1>Settings</h1>
+  Total parking lots: <input id="capacity" type="number" min="1" value="50"><br><br>
+  Already occupied: <input id="occupied" type="number" min="0" value="0"><br><br>
+  <button onclick="save()">Start</button> <!-- run the function save() when the button is pressed -->
+</div>
+
+<!-- The actual counter content-->
+<div id="display" style="display: none">
+  <h1>Free parking lots</h1>
+  <h1 id="numbers" style="font-size: 80px"></h1>
+</div>
+
+<script>
+  // the function to send the settings to the python script with the keyword "set"
+  function save() {
+    const capacity = document.getElementById("capacity").value;
+    const occupied = document.getElementById("occupied").value;
+    fetch("/set/" + capacity + "/" + occupied);
+  }
+
+  // get the status from the Python script every 0.5 seconds
+  setInterval(async () => {
+    const text = await (await fetch("/status")).text();
+    document.getElementById("settings").style.display = text ? "none" : "block";
+    document.getElementById("display").style.display = text ? "block" : "none";
+    document.getElementById("numbers").textContent = text;
+  }, 500);
+</script>
