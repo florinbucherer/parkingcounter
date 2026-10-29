@@ -53,10 +53,17 @@ To set up the project locally, follow these steps:
     - Hardware setup,
     - Project structure on GitHub,
     - HelloWorld
+
 *   **Release 0.2 (Sprint 1 - MVP):**
-    - ...
+    - building the Project base (interfaces)
+    - starting the construction of the backend of the User Interface 
+    - building a Counter
+    - develop  a a car recogniton that can tell if a car if either going in or out of the parking lot
+    
 *   **Release 1.0 (Sprint 2):**
-    - ...
+    - develop the CSS code for the UI 
+    - New feature : Stats on the occupation of the parking Lot
+    - Testing the software 
 ---
 
 ## 5. User Stories
@@ -106,9 +113,9 @@ Sprint 0 focused on creating the organizational and technical foundation for dev
 
 ---
 
-## 7. Sprint 1 Documentation (MVP Implementation)
-...
-<!---
+ ## 7. Sprint 1 Documentation (MVP Implementation)
+
+
 In this sprint, the **Minimum Viable Product** was realized: the basic functionality for distance measurement and visual signaling for two parking spaces.
 
 ### 7.1 Task List (Estimation in Hours)
@@ -170,19 +177,55 @@ def update_status(self, distance):
 ---
 
 ## 8. Sprint 2 Documentation (Expansion Implementation)
-The focus of Sprint 2 is **optimization** and the implementation of a **logging function** to monitor parking usage.
+The focus of Sprint 2 is **building a working Base** for our Project. This base should be Flexible for it to be able to have differents system to count the cars (Laser,²)
+
+
 
 ### 8.1 Task List (Estimation in Hours)
 
-**User Story US2: Data Logging and System Stability**
-*“As an operator, I want reliable detection and logging of occupancy duration for usage analysis.”*
+**User Story :**
+
+
+*"As a coder, i want to connect the counter to the car recognition system, for it to be able to count with a digital camera and other systems."*
+
 
 | Task-ID | Description | Effort (h) |
 | :--- | :--- | :--- |
-| T2.1 | Implementation of a **moving average filter** to suppress sensor noise. | 3.5 |
-| T2.2 | Development of a `Logger` module to store status changes in a CSV file. | 4.0 |
-| T2.3 | Conducting manual **black-box tests** including logging. | 2.0 |
-| T2.4 | Code refactoring to comply with programming conventions and clean code. | 2.5 |
+| T2.1 | build an output from the recogntion system to the counter.  | 1.0 |
+| T2.2 | Create a Main programm that runs the sensor and the UI and the counter and gives the values to the counter and the UI  | 1.0 |
+| T2.2 | Add interfaces (superclasses) for the sensor (camera) and the UI to set standards so they are exchangeable and communication between Main and the components works well | 1.0 |
+| T2.2 | Builddummy testscripts for Sensor and UI to test the Main Programm alone and adapt Main if necessary | 1.0 |
+| T2.2 | Test Main script together with actual camera and UI | 1.0 |
+
+
+
+
+*"As a User, i want to have a working and accessible UI everywhere and on Phone or PC, that is able to show me in real time if a parking space is free."*
+
+| Task-ID | Description | Effort (h) |
+| :--- | :--- | :--- |
+| T3.1 | create the input interface from the counter to the UI | 2.0 |
+| T3.2 | build the UI base | 2.5 |
+| T3.3 | analyse the input from the couter to Update the amount of free parking spaces | 1.0 |
+
+
+*"As a coder, i want to have a working car recognition system, that can detect if a car goes into the parking lot or go out."*
+
+| Task-ID | Description | Effort (h) |
+| :--- | :--- | :--- |
+| T4.1 | Build the car recognition system. | 4.0 |
+| T4.2 | Test the recognition system alone, to see how it works. | 1.0 |
+| T4.3 | Create the Output to the Counter | 1.0 |
+
+
+*"As a coder, i want to build a working counter, that can count how much cars go in and out the parking lot so that it can be send to the UI."*
+
+| Task-ID | Description | Effort (h) |
+| :--- | :--- | :--- |
+| T6.1 | analyse the input signal from the recognition system to the counter, to either add one free parking space or delete one. | 4.0 |
+| T6.3 | create the input interface from the counter to the UI | 2.0 |
+| T6.3 | build the central system that connects the couter to everything with a classe | 3.0 |
+
 
 ### 8.2 UML Diagrams
 *   **Package diagram:** Extension of the `Storage` package for logging.
@@ -248,4 +291,8 @@ def get_filtered_distance(self):
 
 ### Fazit der Arbeit
 Das System erfüllt alle Anforderungen des Pflichtenhefts. Die agile Vorgehensweise half, technische Hürden bei der Sensorkalibrierung frühzeitig zu erkennen.
--->
+
+## 8. Diagramme
+
+![Use Case Diagramm](Graphics/Use_case_diagramm.svg)
+
