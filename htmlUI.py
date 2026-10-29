@@ -52,7 +52,7 @@ class Handler(BaseHTTPRequestHandler):
 class WebUI(IUI):
     def start(self):
         # Start the web server in its own thread so the program does not get stuck
-        server = HTTPServer(("localhost", 8000), Handler)
+        server = HTTPServer(("0.0.0.0", 8000), Handler)
         threading.Thread(target=server.serve_forever, daemon=True).start()
 
         # Open the browser
