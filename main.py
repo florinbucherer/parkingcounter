@@ -1,7 +1,7 @@
 import time
 
 from dummy_sensor import FakeSensor        # Test sensor: swap for real sensor
-from htmlUI import WebUI          # Test UI: swap for real UI
+from htmlUI import WebUI                   # Import UI
 from counter import PCounter
 
 
