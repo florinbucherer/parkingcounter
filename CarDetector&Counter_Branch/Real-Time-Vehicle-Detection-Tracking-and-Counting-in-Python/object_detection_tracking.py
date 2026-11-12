@@ -1,217 +1,188 @@
-import numpy as np
-import datetime
-import cv2
-from pathlib import Path
-from ultralytics import YOLO
+import sys
+import threading
 from collections import deque
-
-from deep_sort.deep_sort.tracker import Tracker
-from deep_sort.deep_sort import nn_matching
-from deep_sort.deep_sort.detection import Detection
-from deep_sort.tools import generate_detections as gdet
-
-from helper import create_video_writer
+from pathlib import Path
+from typing import Callable, Dict, Iterator, Optional, Tuple, TypeVar, Union
 
 
 BASE_DIR = Path(__file__).resolve().parent
+Point = Tuple[int, int]
+Event = TypeVar("Event")
+CrossingDirection = Callable[
+    [Point, Point, int, int, int], Optional[Event]
+]
 
-# define some parameters
-conf_threshold = 0.3
-max_cosine_distance = 0.4
-nn_budget = None
-points = [deque(maxlen=32) for _ in range(1000)] # list of deques to store the points
-counter = 0
-start_line = (750, 700)
-end_line = (750, 200)
 
-# Initialize the video capture and the video writer objects
-video_cap = cv2.VideoCapture(str(BASE_DIR / "cars2.mp4"))
-writer = create_video_writer(video_cap, str(BASE_DIR / "output.mp4"))
+def detect_crossings(
+    crossing_direction: CrossingDirection,
+    video_path: Union[str, Path, int] = BASE_DIR / "cars2.mp4",
+    output_path: Optional[Union[str, Path]] = BASE_DIR / "output.mp4",
+    stop_event: Optional[threading.Event] = None,
+    display: bool = True,
+) -> Iterator[Event]:
+    """Track vehicles and yield the direction returned for each line crossing."""
+    import cv2
+    import numpy as np
+    from ultralytics import YOLO
 
-# Initialize the YOLOv8 model using the default weights
-model = YOLO(str(BASE_DIR / "yolov8s.pt"))
+    from deep_sort.deep_sort.tracker import Tracker
+    from deep_sort.deep_sort import nn_matching
+    from deep_sort.deep_sort.detection import Detection
+    from deep_sort.tools import generate_detections as gdet
 
-# Initialize the deep sort tracker
-model_filename = str(BASE_DIR / "config" / "mars-small128.pb")
-encoder = gdet.create_box_encoder(model_filename, batch_size=1)
-metric = nn_matching.NearestNeighborDistanceMetric(
-    "cosine", max_cosine_distance, nn_budget)
-tracker = Tracker(metric)
+    if stop_event is None:
+        stop_event = threading.Event()
 
-# load the COCO class labels the YOLO model was trained on
-classes_path = BASE_DIR / "config" / "coco.names"
-with open(classes_path, "r") as f:
-    class_names = f.read().strip().split("\n")
+    video_cap = None
+    writer = None
+    try:
+        video_cap = cv2.VideoCapture(video_path)
+        if not video_cap.isOpened():
+            raise RuntimeError("Could not open video source: {}".format(video_path))
 
-# create a list of random colors to represent each class
-np.random.seed(42)  # to get the same colors
-colors = np.random.randint(0, 255, size=(len(class_names), 3))  # (80, 3)
+        fps = video_cap.get(cv2.CAP_PROP_FPS)
+        if fps <= 0:
+            fps = 30
+        width = int(video_cap.get(cv2.CAP_PROP_FRAME_WIDTH))
+        height = int(video_cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
 
-# loop over the frames
-while True:
-    # starter time to computer the fps
-    start = datetime.datetime.now()
-    ret, frame = video_cap.read()
-    if not ret:
-        print("End of the video file...")
-        break
+        if output_path is not None:
+            output_path = Path(output_path)
+            output_path.parent.mkdir(parents=True, exist_ok=True)
+            writer = cv2.VideoWriter(
+                str(output_path),
+                cv2.VideoWriter_fourcc(*"mp4v"),
+                fps,
+                (width, height),
+            )
+            if not writer.isOpened():
+                raise RuntimeError(
+                    "Could not open output video for writing: {}".format(output_path)
+                )
 
-    overlay = frame.copy()
-    
-    # draw the line
-    cv2.line(frame, start_line, end_line, (0, 0, 255), 12)
-    
-    frame = cv2.addWeighted(overlay, 0.5, frame, 0.5, 0)
+        model = YOLO(str(BASE_DIR / "yolov8s.pt"))
+        encoder = gdet.create_box_encoder(
+            str(BASE_DIR / "config" / "mars-small128.pb"),
+            batch_size=1,
+        )
+        metric = nn_matching.NearestNeighborDistanceMetric("cosine", 0.4, None)
+        tracker = Tracker(metric)
 
-    ############################################################
-    ### Detect the objects in the frame using the YOLO model ###
-    ############################################################
+        with open(BASE_DIR / "config" / "coco.names", encoding="utf-8") as file:
+            class_names = file.read().splitlines()
 
-    # run the YOLO model on the frame
-    results = model(frame)
+        np.random.seed(42)
+        colors = np.random.randint(0, 255, size=(len(class_names), 3))
+        points: Dict[int, deque] = {}
+        line_x = int(width * 750 / 1280)
+        line_top = int(height * 200 / 720)
+        line_bottom = int(height * 700 / 720)
+        vehicle_classes = {"car", "motorcycle", "bus", "truck"}
 
-    # loop over the results
-    for result in results:
-        # initialize the list of bounding boxes, confidences, and class IDs
-        bboxes = []
-        confidences = []
-        class_ids = []
-
-        # loop over the detections
-        for data in result.boxes.data.tolist():
-            x1, y1, x2, y2, confidence, class_id = data
-            x = int(x1)
-            y = int(y1)
-            w = int(x2) - int(x1)
-            h = int(y2) - int(y1)
-            class_id = int(class_id)
-
-            # filter out weak predictions by ensuring the confidence is
-            # greater than the minimum confidence
-            if confidence > conf_threshold:
-                bboxes.append([x, y, w, h])
-                confidences.append(confidence)
-                class_ids.append(class_id)
-                # cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 255, 0), 2)
-                
-    ############################################################
-    ### Track the objects in the frame using DeepSort        ###
-    ############################################################
-
-    # get the names of the detected objects
-    names = [class_names[class_id] for class_id in class_ids]
-
-    # get the features of the detected objects
-    features = encoder(frame, bboxes)
-    # convert the detections to deep sort format
-    dets = []
-    for bbox, conf, class_name, feature in zip(bboxes, confidences, names, features):
-        dets.append(Detection(bbox, conf, class_name, feature))
-
-    # run the tracker on the detections
-    tracker.predict()
-    tracker.update(dets)
-
-    # loop over the tracked objects
-    for track in tracker.tracks:
-        if not track.is_confirmed() or track.time_since_update > 1:
-            continue
-
-        # get the bounding box of the object, the name
-        # of the object, and the track id
-        bbox = track.to_tlbr()
-        track_id = track.track_id
-        class_name = track.get_class()
-        # convert the bounding box to integers
-        x1, y1, x2, y2 = int(bbox[0]), int(bbox[1]), int(bbox[2]), int(bbox[3])
-
-        # get the color associated with the class name
-        class_id = class_names.index(class_name)
-        color = colors[class_id]
-        B, G, R = int(color[0]), int(color[1]), int(color[2])
-
-        # draw the bounding box of the object, the name
-        # of the predicted object, and the track id
-        text = str(track_id) + " - " + class_name
-        cv2.rectangle(frame, (x1, y1), (x2, y2), (B, G, R), 3)
-        cv2.rectangle(frame, (x1 - 1, y1 - 20),
-                      (x1 + len(text) * 12, y1), (B, G, R), -1)
-        cv2.putText(frame, text, (x1 + 5, y1 - 8),
-                    cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 2)
-        
-        ############################################################
-        ### Count the number of vehicles passing the lines       ###
-        ############################################################
-        
-        center_x = int((x1 + x2) / 2)
-        center_y = int((y1 + y2) / 2)
-        # append the center point of the current object to the points list
-        points[track_id].append((center_x, center_y))
-
-        cv2.circle(frame, (center_x, center_y), 4, (0, 255, 0), -1)
-        
-        # loop over the set of tracked points and draw them
-        for i in range(1, len(points[track_id])):
-            point1 = points[track_id][i - 1]
-            point2 = points[track_id][i]
-            # if the previous point or the current point is None, do nothing
-            if point1 is None or point2 is None:
-                continue
-            
-            cv2.line(frame, (point1), (point2), (0, 255, 0), 2)
-            
-        # get the last point from the points list and draw it
-        last_point_x = points[track_id][0][0]
-        last_point_y = points[track_id][0][1]
-        cv2.circle(frame, (int(last_point_x), int(last_point_y)), 4, (255, 0, 255), -1)    
-
-        # if the y coordinate of the center point is below the line, and the x coordinate is 
-        # between the start and end points of the line, and the the last point is above the line,
-        # increment the total number of cars crossing the line and remove the center points from the list
-        if center_x > start_line[0] and end_line[1] < center_y < start_line[1] and last_point_x < start_line[0]:
-            previous_x = points[track_id][-2][0]
-            line_x = start_line[0]
-            within_line = min(start_line[1], end_line[1]) < center_y < max(start_line[1], end_line[1])
-            
-            if within_line and previous_x < line_x <= center_x:
-                counter -= 1
-                points[track_id].clear()
-            elif within_line and previous_x > line_x >= center_x:
-                counter += 1
-                points[track_id].clear()
-            
-    ############################################################
-    ### Some post-processing to display the results          ###
-    ############################################################
-
-    # end time to compute the fps
-    end = datetime.datetime.now()
-    # calculate the frame per second and draw it on the frame
-    fps = f"FPS: {1 / (end - start).total_seconds():.2f}"
-    cv2.putText(frame, fps, (50, 50),
-                cv2.FONT_HERSHEY_SIMPLEX, 2, (0, 0, 255), 8)
-    
-    # draw the total number of vehicles passing the lines
-    cv2.putText(frame, "C", (910, 483), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 2)
-    cv2.putText(frame, f"{counter}", (1040, 483), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 2)
-    
-    # show the output frame
-    cv2.imshow("Output", frame)
-    # write the frame to disk
-    writer.write(frame)
-    key = cv2.waitKey(1) & 0xFF
-    if key in (ord("q"), ord("Q")):
-        break
-    elif key in (ord("p"), ord("P")):
-        while True:
-            key = cv2.waitKey(0) & 0xFF
-            if key in (ord("p"), ord("P"), ord("q"), ord("Q")):
+        while not stop_event.is_set():
+            ret, frame = video_cap.read()
+            if not ret:
                 break
 
-        if key in (ord("q"), ord("Q")):
-            break
+            cv2.line(
+                frame,
+                (line_x, line_bottom),
+                (line_x, line_top),
+                (0, 0, 255),
+                12,
+            )
+            results = model(frame, verbose=False)
+            bboxes = []
+            confidences = []
+            class_ids = []
 
-# release the video capture, video writer, and close all windows
-video_cap.release()
-writer.release()
-cv2.destroyAllWindows()
+            for result in results:
+                if result.boxes is None:
+                    continue
+                for data in result.boxes.data.tolist():
+                    x1, y1, x2, y2, confidence, class_id = data
+                    class_id = int(class_id)
+                    if (
+                        confidence > 0.3
+                        and 0 <= class_id < len(class_names)
+                        and class_names[class_id] in vehicle_classes
+                    ):
+                        bboxes.append(
+                            [int(x1), int(y1), int(x2) - int(x1), int(y2) - int(y1)]
+                        )
+                        confidences.append(confidence)
+                        class_ids.append(class_id)
+
+            names = [class_names[class_id] for class_id in class_ids]
+            features = encoder(frame, bboxes)
+            detections = [
+                Detection(bbox, confidence, class_name, feature)
+                for bbox, confidence, class_name, feature in zip(
+                    bboxes, confidences, names, features
+                )
+            ]
+            tracker.predict()
+            tracker.update(detections)
+
+            for track in tracker.tracks:
+                if not track.is_confirmed() or track.time_since_update > 1:
+                    continue
+
+                x1, y1, x2, y2 = (int(value) for value in track.to_tlbr())
+                class_name = track.get_class()
+                color = colors[class_names.index(class_name)]
+                color_bgr = tuple(int(channel) for channel in color)
+                cv2.rectangle(frame, (x1, y1), (x2, y2), color_bgr, 3)
+
+                center = ((x1 + x2) // 2, (y1 + y2) // 2)
+                history = points.setdefault(track.track_id, deque(maxlen=32))
+                direction = None
+                if history:
+                    direction = crossing_direction(
+                        history[-1], center, line_x, line_top, line_bottom
+                    )
+
+                history.append(center)
+                cv2.circle(frame, center, 4, (0, 255, 0), -1)
+                for index in range(1, len(history)):
+                    cv2.line(frame, history[index - 1], history[index], (0, 255, 0), 2)
+
+                if direction is not None:
+                    history.clear()
+                    history.append(center)
+                    yield direction
+
+            if writer is not None:
+                writer.write(frame)
+
+            if display:
+                cv2.imshow("Vehicle Detection", frame)
+                key = cv2.waitKey(1) & 0xFF
+                if key in (ord("q"), ord("Q")):
+                    stop_event.set()
+                elif key in (ord("p"), ord("P")):
+                    while not stop_event.is_set():
+                        key = cv2.waitKey(50) & 0xFF
+                        if key in (ord("p"), ord("P"), ord("q"), ord("Q")):
+                            if key in (ord("q"), ord("Q")):
+                                stop_event.set()
+                            break
+    finally:
+        if video_cap is not None:
+            video_cap.release()
+        if writer is not None:
+            writer.release()
+        if display:
+            cv2.destroyAllWindows()
+
+
+def main():
+    sys.path.insert(0, str(BASE_DIR.parent.parent))
+    from vehicle_sensor import VehicleSensor
+
+    for direction in detect_crossings(VehicleSensor._crossing_direction):
+        print(direction.name)
+
+
+if __name__ == "__main__":
+    main()
