@@ -1,14 +1,14 @@
 import time
 
 from vehicle_sensor import VehicleSensor
-from dummy_ui import ConsoleUI          # Test UI: swap for real UI
+from htmlUI import WebUI                   # Import UI
 from counter import PCounter
 
 
 def main():
     events = []                           # shared list to queue events like car in or car out: sensor appends, main removes
 
-    ui = ConsoleUI()                      # test UI: swap for real UI
+    ui = WebUI()                      # test UI: swap for real UI
     sensor = VehicleSensor(events)
     ui.start()
     sensor.start()

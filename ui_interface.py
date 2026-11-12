@@ -16,6 +16,7 @@ class IUI(ABC):
 
     @abstractmethod
     def start(self):
+        self.capacity = int(input("Capacity of the parking lot : "))
         """
         Start the UI. Must return immediately (run a thread inside if needed).
         Optionally ask user for how many parking lots are already occupied at program start and set self.start_occupied accordingly.
@@ -23,7 +24,9 @@ class IUI(ABC):
 
     @abstractmethod
     def show(self, occupied: int, free: int):
+        print(f"Occupied : {occupied} | Free : {free}")
         """Display the current numbers."""
 
     def stop(self):
         """Optional: clean up. Does nothing by default."""
+
