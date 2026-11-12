@@ -178,17 +178,7 @@ class VehicleSensor(ISensor):
                     class_name = track.get_class()
                     color = colors[class_names.index(class_name)]
                     color_bgr = tuple(int(channel) for channel in color)
-                    text = "{} - {}".format(track.track_id, class_name)
                     cv2.rectangle(frame, (x1, y1), (x2, y2), color_bgr, 3)
-                    cv2.putText(
-                        frame,
-                        text,
-                        (x1 + 5, y1 - 8),
-                        cv2.FONT_HERSHEY_SIMPLEX,
-                        0.5,
-                        (255, 255, 255),
-                        2,
-                    )
 
                     center = ((x1 + x2) // 2, (y1 + y2) // 2)
                     history = points.setdefault(track.track_id, deque(maxlen=32))
@@ -204,27 +194,6 @@ class VehicleSensor(ISensor):
                     cv2.circle(frame, center, 4, (0, 255, 0), -1)
                     for index in range(1, len(history)):
                         cv2.line(frame, history[index - 1], history[index], (0, 255, 0), 2)
-
-                elapsed = time.perf_counter() - frame_start
-                fps = 1 / elapsed if elapsed > 0 else 0
-                cv2.putText(
-                    frame,
-                    "FPS: {:.2f}".format(fps),
-                    (50, 50),
-                    cv2.FONT_HERSHEY_SIMPLEX,
-                    1,
-                    (0, 0, 255),
-                    2,
-                )
-                cv2.putText(
-                    frame,
-                    "Crossings: {}".format(crossing_total),
-                    (50, 90),
-                    cv2.FONT_HERSHEY_SIMPLEX,
-                    1,
-                    (255, 255, 255),
-                    2,
-                )
 
                 writer.write(frame)
                 if self.display:
