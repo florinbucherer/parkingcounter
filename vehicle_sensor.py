@@ -12,8 +12,8 @@ TRACKING_DIR = (
     / "CarDetector&Counter_Branch"
     / "Real-Time-Vehicle-Detection-Tracking-and-Counting-in-Python"
 )
-DEFAULT_VIDEO_PATH = TRACKING_DIR / "cars2.mp4"
-DEFAULT_OUTPUT_PATH = TRACKING_DIR / "vehicle_sensor_output.mp4"
+DEFAULT_VIDEO_PATH = 0      # 0 = Standard-Webcam (bei mehreren Kameras 1, 2, ...)
+DEFAULT_OUTPUT_PATH = None  # keine Aufnahme mitschreiben
 Point = Tuple[int, int]
 
 
@@ -24,12 +24,12 @@ class VehicleSensor(ISensor):
         self,
         events: list,
         video_path: Union[str, Path, int] = DEFAULT_VIDEO_PATH,
-        output_path: Union[str, Path] = DEFAULT_OUTPUT_PATH,
+        output_path: Optional[Union[str, Path]] = DEFAULT_OUTPUT_PATH,
         display: bool = True,
     ):
         super().__init__(events)
         self.video_path = video_path
-        self.output_path = Path(output_path)
+        self.output_path = Path(output_path) if output_path is not None else None
         self.display = display
         self._stop_event = threading.Event()
         self._thread: Optional[threading.Thread] = None
