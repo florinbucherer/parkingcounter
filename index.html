@@ -16,7 +16,13 @@
 <div id="display" style="display: none">
   <h1>Free parking lots</h1>
   <h1 id="numbers" style="font-size: 80px"></h1>
-  <button onclick="fetch('/exit')">Exit</button> <!-- tells the Python script to end the program -->
+  <button onclick="exitApp()">Exit</button> <!-- tells the Python script to end the program -->
+</div>
+
+<!-- Message after exit (shown if the browser does not allow closing the tab) -->
+<div id="bye" style="display: none">
+  <h1>Program ended</h1>
+  You can close this tab.
 </div>
 
 <script>
@@ -27,9 +33,23 @@
     fetch("/set/" + capacity + "/" + occupied);
   }
 
+  let ended = false   // becomes true after exit, so the page stops asking for the status
+
+  // tell the Python script to end, then try to close this tab
+  async function exitApp() {
+    ended = true
+    await fetch("/exit")
+    document.getElementById("settings").style.display = "none"
+    document.getElementById("display").style.display = "none"
+    document.getElementById("bye").style.display = "block"
+    window.close()   // only works in some browsers, otherwise the message above stays
+  }
+
   // get the status from the Python script every 0.5 seconds
   setInterval(async () => {
+    if (ended) return
     const text = await (await fetch("/status")).text();
+    if (ended) return
     document.getElementById("settings").style.display = text ? "none" : "block";
     document.getElementById("display").style.display = text ? "block" : "none";
     document.getElementById("numbers").textContent = text;
