@@ -1,6 +1,6 @@
 import time
 
-from dummy_sensor import FakeSensor        # Test sensor: swap for real sensor
+from vehicle_sensor import VehicleSensor
 from dummy_ui import ConsoleUI          # Test UI: swap for real UI
 from counter import PCounter
 
@@ -9,7 +9,7 @@ def main():
     events = []                           # shared list to queue events like car in or car out: sensor appends, main removes
 
     ui = ConsoleUI()                      # test UI: swap for real UI
-    sensor = FakeSensor(events)           # test sensor: swap for real sensor
+    sensor = VehicleSensor(events)
     ui.start()
     sensor.start()
     counter = PCounter(ui.capacity, ui.start_occupied)  # counter knows nothing about sensors or UI, it just counts the cars in and out
