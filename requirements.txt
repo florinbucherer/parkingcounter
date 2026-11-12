@@ -1,0 +1,9 @@
+# ParkingCounter dependencies  ->  pip install -r requirements.txt
+# The counter, the UI and the unit tests only need the Python standard library.
+# Everything below is for the camera / vehicle detection (vehicle_sensor.py).
+
+numpy
+scipy
+opencv-python   # video input and the detection window (cv2.imshow needs the non-headless build)
+ultralytics     # YOLOv8 vehicle detection (also installs torch)
+tensorflow      # runs the DeepSORT appearance model (config/mars-small128.pb)
