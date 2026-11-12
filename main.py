@@ -15,7 +15,7 @@ def main():
     counter = PCounter(ui.capacity, ui.start_occupied)  # counter knows nothing about sensors or UI, it just counts the cars in and out
 
     try:
-        while ui.running:   #while the UI is running, this can be stopped by the UI itself.
+        while ui.running:   #while the UI is running, this can be stopped by the UI itself. like this the main programm doesn't have to be stopped seperately and just stops as soon as the UI is closed.
             while events:   #while events is not empty, pop the first event and apply it to the counter
                 counter.apply(events.pop(0))
             counter.set_capacity(ui.capacity)  # update capacity of the UI in counter.

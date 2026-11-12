@@ -15,13 +15,14 @@ total = 0               # all parking lots
 occupied_at_start = 0   # parking lots that are already occupied at the start
 free = 0                # free parking lots (updated all the time)
 configured = False      # becomes True as soon as the user has submitted the settings
+exit_requested = False  # becomes True when the user presses the exit button
 
 
 # The handler answers the requests from the browser.
 # do_GET is called automatically whenever the browser opens an address.
 class Handler(BaseHTTPRequestHandler):
     def do_GET(self):
-        global total, occupied_at_start, free, configured   # we want to change these global variables
+        global total, occupied_at_start, free, configured, exit_requested   # we want to change these global variables
 
         if self.path.startswith("/set"):
             # When The browser sent the settings, e.g. "/set/50/10"
@@ -31,6 +32,11 @@ class Handler(BaseHTTPRequestHandler):
             free = total - occupied_at_start
             configured = True
             text = ""                           # the browser does not need an answer
+
+        elif self.path == "/exit":
+            # The exit button was pressed: main.py will notice this in show() and end the program
+            exit_requested = True
+            text = ""
 
         elif self.path == "/status":
             # when the web page asks for the current number from the main eg. from parkingcounter
@@ -69,3 +75,5 @@ class WebUI(IUI):
     def show(self, occupied, free_now):
         global free
         free = free_now   # just remember it, the browser fetches the number itself
+        if exit_requested:
+            self.running = False   # main.py stops its loop, then stops the sensor and the UI
