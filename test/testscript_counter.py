@@ -1,7 +1,7 @@
 import unittest
 
 from counter import PCounter
-from sensor import Direction
+from sensor_interface import Direction
 
 IN = Direction.IN    # car comes in
 OUT = Direction.OUT  # car goes out

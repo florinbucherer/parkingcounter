@@ -193,8 +193,11 @@ class ParkingCounter:
 ```
 ### 7.2 UML Diagrams
 - **Use Case Diagram:** Shows how the different components work together.
-  ![Use Case Diagram](Graphics/Use_case_diagramm.svg)
-  **Class Diagram:** Shows the `ParkingCounter` and related classes.
+![Use Case Diagram](Graphics/Use_case_diagramm.svg)
+
+**Datenflussdiagram:** 
+
+![Datenflussdiagramm](Graphics\Datenflussdriagramm.svg)
 - **Sequence Diagram:** Visualizes the event loop between sensor/camera, counter, and UI.
 ---      
 
