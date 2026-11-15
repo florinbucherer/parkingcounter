@@ -12,7 +12,7 @@ The main goal is to create a working prototype (MVP) that:
 -   Displays the current number of available parking spaces via a **User Interface**.
 -   Provides data for later evaluation.
 
-| Basisanforderung | Leistungsanforderungen | Begeisterungsanforderungen |
+| Basic Requirements | Performance Requirements | Enthusiastic Requirements |
 | --- | --- | --- |
 | User interface (clear, readable, real-time display) | Car park statistics (occupancy rate by the hour, 24/7 statistics) | Intelligent detection (vehicle type) |
 | Count the number of parking spaces available (automatic update, error-proofing) | System performance (update <1s, low error rate) | User guidance (available car parks, mobile app) |
@@ -23,6 +23,11 @@ The main goal is to create a working prototype (MVP) that:
 -   **Sensors:** A Webcam
 -   **Output:** User Interface
 -   **Software:** Python script using an image detection library.
+*   **Control unit:** A computer that can run Python
+*   **Sensors:** A Webcam
+*   **Output:** User Interface
+*   **Software:** Python script using a image detection library.
+The Product should fullfill as a minimum the Basic Requirements.
 
 ### 1.4 Constraints
 -   Programming language: **Python**.
@@ -33,7 +38,7 @@ The main goal is to create a working prototype (MVP) that:
 
 ## 2. Build Instructions
 To set up the project locally, follow these steps:
-1.  **Clone the repository:** `git clone [https://github.com/username/parkfeld-detektor.git](https://github.com/username/parkfeld-detektor.git)`
+1.  **Clone the repository:** `git clone https://github.com/florinbucherer/parkingcounter`
 2.  **Create a virtual environment:** `python -m venv venv`
 3.  **Install dependencies:** `pip install -r requirements.txt`
 4.  **Start the application:** `python main.py`
@@ -41,9 +46,9 @@ To set up the project locally, follow these steps:
 ---
 
 ## 3. Brief User Guide
-1.  Start the Program.
-2.  Open the User Interface.
-3.  Point your webcam at the entrance to the parking lot.
+1.  Start the Programm (The User Interface will open Autmatically)
+2.  Enter number of Parking lots and number of already occupied parking lots at start and press start.
+3.  Point your webcam at the entrance of the parking Area.
 
 ---
 

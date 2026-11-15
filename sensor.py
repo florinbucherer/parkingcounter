@@ -5,7 +5,7 @@ import time
 from sensor_interface import ISensor, Direction
 
 
-class FakeSensor(ISensor):
+class Sensor(ISensor):
     """Emits random IN/OUT events. For developing without a camera."""
 
     def __init__(self, events: list):
