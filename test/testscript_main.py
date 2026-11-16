@@ -17,7 +17,7 @@ class TestMain(unittest.TestCase):
     def run_main(self, ui, sensor):
         # replace the real classes and the waiting time
         with patch("main.WebUI", return_value=ui), \
-             patch("main.FakeSensor", return_value=sensor) as sensor_class, \
+             patch("main.VehicleSensor", return_value=sensor) as sensor_class, \
              patch("main.time.sleep"):
             main.main()
         return sensor_class
@@ -49,7 +49,7 @@ class TestMain(unittest.TestCase):
             return sensor
 
         with patch("main.WebUI", return_value=ui), \
-             patch("main.FakeSensor", side_effect=make_sensor), \
+             patch("main.VehicleSensor", side_effect=make_sensor), \
              patch("main.time.sleep"):
             main.main()
         self.assertEqual(shown, [(3, 7)])   # 2 + 2 - 1 = 3 occupied
