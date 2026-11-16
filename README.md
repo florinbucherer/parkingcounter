@@ -1,4 +1,10 @@
-
+# ToDo
+- Description from which Side must Camera be pointed.
+- Description User Guide how long to wait until program works at startup
+- Explanation of Abstraction
+- Explanation of why simple (What features could be added)
+- Why lists instead of qeues
+- Why abstract classes instead of Interfaces
 # Project Documentation: ParkingCounter
 
 ## 1. Introduction, Objectives, Constraints
