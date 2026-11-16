@@ -27,10 +27,19 @@ class Handler(BaseHTTPRequestHandler):
         if self.path.startswith("/set"):
             # When The browser sent the settings, e.g. "/set/50/10"
             parts = self.path.split("/")        # split them and store them in a list: ["", "set", "50", "10"]
-            total = int(parts[2])               # 50
-            occupied_at_start = int(parts[3])   # 10
-            free = total - occupied_at_start
-            configured = True
+            try:
+                new_total = int(parts[2])       # 50
+                new_occupied = int(parts[3])    # 10
+            except (IndexError, ValueError):    # e.g. "/set//" when an input field was empty
+                new_total, new_occupied = 0, -1
+            if new_total < 1 or not 0 <= new_occupied <= new_total:
+                self.send_error(400, "Invalid settings")   # answer with an error instead of crashing the handler
+                return
+            if not configured:                  # the settings can only be sent once, otherwise the page and the counter would disagree
+                total = new_total
+                occupied_at_start = new_occupied
+                free = total - occupied_at_start
+                configured = True
             text = ""                           # the browser does not need an answer
 
         elif self.path == "/exit":
@@ -55,11 +64,18 @@ class Handler(BaseHTTPRequestHandler):
         self.end_headers() #end header to let the browser know that now the actual content follows
         self.wfile.write(text.encode()) #send the actual content from the variable text to the browser
 
+    def log_message(self, format, *args):
+        pass   # the page asks /status every 0.5 s, do not print every request to the console
+
+
 class WebUI(IUI):
+    _server = None
+
     def start(self):
-        # Start the web server in its own thread so the program does not get stuck
-        server = HTTPServer(("0.0.0.0", 8000), Handler)
-        threading.Thread(target=server.serve_forever, daemon=True).start()
+        # Start the web server in its own thread so the program does not get stuck.
+        # 127.0.0.1 = only this computer may connect (0.0.0.0 would let everybody in the network press Exit).
+        self._server = HTTPServer(("127.0.0.1", 8000), Handler)
+        threading.Thread(target=self._server.serve_forever, daemon=True).start()
 
         # Open the browser
         webbrowser.open("http://localhost:8000")
@@ -77,3 +93,9 @@ class WebUI(IUI):
         free = free_now   # just remember it, the browser fetches the number itself
         if exit_requested:
             self.running = False   # main.py stops its loop, then stops the sensor and the UI
+
+    def stop(self):
+        if self._server is not None:   # release port 8000
+            self._server.shutdown()
+            self._server.server_close()
+            self._server = None

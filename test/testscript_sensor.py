@@ -1,7 +1,7 @@
 import unittest
 from unittest.mock import patch
 
-from sensor import Sensor
+from sensor import Sensor as FakeSensor
 from sensor_interface import ISensor, Direction
 
 
@@ -17,16 +17,16 @@ class TestISensor(unittest.TestCase):
         self.assertEqual(Direction.OUT.value, -1)
 
 
-class TestSensor(unittest.TestCase):
+class TestFakeSensor(unittest.TestCase):
 
     def test_keeps_event_list(self):
         events = []
-        s = Sensor(events)
+        s = FakeSensor(events)
         self.assertIs(s.events, events)
 
     def test_loop_adds_one_event(self):
         events = []
-        s = Sensor(events)
+        s = FakeSensor(events)
         s._running.set()
         # the fake sleep stops the loop after the first round
         with patch("sensor.time.sleep", side_effect=lambda t: s._running.clear()):
@@ -36,12 +36,12 @@ class TestSensor(unittest.TestCase):
 
     def test_loop_does_nothing_when_stopped(self):
         events = []
-        s = Sensor(events)
+        s = FakeSensor(events)
         s._loop()   # running flag is not set
         self.assertEqual(events, [])
 
     def test_start_and_stop(self):
-        s = Sensor([])
+        s = FakeSensor([])
         with patch("sensor.time.sleep"):   # no waiting
             s.start()
             self.assertTrue(s._running.is_set())
@@ -50,6 +50,6 @@ class TestSensor(unittest.TestCase):
         self.assertFalse(s._thread.is_alive())
 
     def test_stop_without_start(self):
-        s = Sensor([])
+        s = FakeSensor([])
         s.stop()   # must not crash
         self.assertFalse(s._running.is_set())
