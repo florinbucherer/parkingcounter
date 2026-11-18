@@ -9,7 +9,7 @@
 
 ## 1. Introduction, Objectives, Constraints
 ### 1.1 Introduction
-ParkingCounter is a program that uses a webcam to monitor the entrance of a parking area. It detects vehicles entering and leaving the parking area, keeps track of occupied and available spaces and displays the current number of available parking lots through an interface.
+ParkingCounter is a program that uses a webcam to monitor the entrance of a parking area. It detects vehicles entering and leaving the parking area, keeps track of occupied and available spaces and displays the current number of available parking lots through an interface. The System is developed for the specific Parking Area above the DHBW-Lörrach and is designed as the Camera would be mounted on the roof of building D facing the street that enters the Parking Area. The Programm could be used for other similar situations too, however when the camera is installed on the other side of the street or the Parking Area is on the other side, the code must be changed accordingly so the programm knows in which direction cars are entering or exiting the Area. As we assume a fix installed installation we did not implement a setting to change the direction.
 
 ### 1.2 Objectives
 The main goal is to create a working prototype (MVP) that:
@@ -49,13 +49,18 @@ To set up the project locally, follow these steps:
 2.  **Create a virtual environment:** `python -m venv venv`
 3.  **Install dependencies:** `pip install -r requirements.txt`
 4.  **Start the application:** `python main.py`
+5.  **Position the camera on the correct side of the road and point it towards the street. For the Parking Area of DHBW Lörrach mount it on the roof of Building D facing the street.**
+6.  **Open the UI on a device in the same Network by typing the IP-Adress of the Host Computer followed by :800 into the browser**
+7.  **Enjoy :)**
 
 ---
 
 ## 3. Brief User Guide
 1.  Start the Programm (The User Interface will open Autmatically)
 2.  Enter number of Parking lots and number of already occupied parking lots at start and press start.
-3.  Point your webcam at the entrance of the parking Area.
+3.  **Position the camera on the correct side of the road and point it towards the street. For the Parking Area of DHBW Lörrach mount it on the roof of Building D facing the street.**
+4.  **Open the UI on a device in the same Network by typing the IP-Adress of the Host Computer followed by :800 into the browser**
+5.  **Enjoy :)**
 
 ---
 
