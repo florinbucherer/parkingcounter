@@ -9,21 +9,19 @@ from counter import PCounter
 def main():
     events = []                           # shared list to queue events like car in or car out: sensor appends, main removes
 
-    main_ui = WebUI()                     # the main UI owns capacity and start_occupied
-    UIs = [main_ui, LogUI("parkingcounter_log.txt")]  # UI's: Main UI must be the first one, when this UI is stopped, the program ends. The second UI is independent and can be added or removed.
+    counter = PCounter()                  # the counter owns capacity and occupied (in counter.values) and knows nothing about sensors or UI, it just counts the cars in and out
+    UIs = [WebUI(counter.values), LogUI(counter.values, "parkingcounter.log")]  # Every UI gets the dictionary of the counter, so all UIs work on the same numbers (the user can change them in any UI). The first UI in the list is the main UI: it asks the user for capacity and start occupied and decides when the program ends (UIs[0].running). All other UIs are independent and can be added or removed.
     sensor = VehicleSensor(events)         # sensor knows nothing about the UI or the counter, it just detects cars and appends events to the list
-    
+
     for ui in UIs:
         ui.start()
     sensor.start()
-    counter = PCounter(main_ui.capacity, main_ui.start_occupied)  # counter knows nothing about sensors or UI, it just counts the cars in and out
 
     try:
-        while main_ui.running:   #while the UI is running, this can be stopped by the UI itself.
+        while UIs[0].running:   #the first UI in the list is the main UI: it decides when the program ends. It stops itself, e.g. with the exit button.
             while events:   #while events is not empty, pop the first event and apply it to the counter
                 counter.apply(events.pop(0))
-            counter.set_capacity(main_ui.capacity)  # update capacity of the main UI in counter.
-            for ui in UIs:   #show the current numbers in all UIs, the main UI is the first one, the second UI is independent and can be added or removed.
+            for ui in UIs:   #show the current numbers in all UIs
                 ui.show(counter.occupied, counter.free)
             time.sleep(0.1)
     except KeyboardInterrupt:   #exit program on Ctrl+C

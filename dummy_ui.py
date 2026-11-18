@@ -11,17 +11,19 @@ class ConsoleUI(IUI):
     capacity, or type q to quit the program.
     """
 
-    def __init__(self, capacity: int = 50, start_occupied: int = 0):
-        super().__init__(capacity, start_occupied)
+    def __init__(self, values: dict):
+        super().__init__(values)
         self._last = None
 
     def start(self):
-        self.capacity = self._ask("Number of parking spaces", self.capacity, minimum=1)
-        self.start_occupied = self._ask(
+        # the defaults in the questions are the current numbers of the counter
+        capacity = self._ask("Number of parking spaces", self.values["capacity"], minimum=1)
+        self.values["capacity"] = capacity
+        self.values["occupied"] = self._ask(
             "Spaces already occupied",
-            min(self.start_occupied, self.capacity),
+            min(self.values["occupied"], capacity),
             minimum=0,
-            maximum=self.capacity,
+            maximum=capacity,
         )
         print("Type a number to change the capacity, or q to quit.")
         threading.Thread(target=self._read_input, daemon=True).start()
@@ -53,12 +55,13 @@ class ConsoleUI(IUI):
         return value if value >= minimum else None
 
     def show(self, occupied: int, free: int):
-        state = (occupied, free, self.capacity)
+        capacity = self.values["capacity"]
+        state = (occupied, free, capacity)
         if state == self._last:          # only print when something changed
             return
         self._last = state
         full = "  -> FULL" if free == 0 else ""
-        print(f"Free: {free:3d} | Occupied: {occupied:3d} / {self.capacity}{full}")
+        print(f"Free: {free:3d} | Occupied: {occupied:3d} / {capacity}{full}")
 
     def _read_input(self):
         while True:
@@ -73,4 +76,4 @@ class ConsoleUI(IUI):
             if value is None:
                 print("Please enter a positive whole number, or q to quit.")
             else:
-                self.capacity = value
+                self.values["capacity"] = value

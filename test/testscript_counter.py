@@ -76,6 +76,32 @@ class TestPCounter(unittest.TestCase):
 
     def test_change_capacity(self):
         c = PCounter(10, 4)
-        c.set_capacity(20)
+        c.capacity = 20
         self.show("capacity changed to 20", c)
         self.assertEqual(c.free, 16)
+
+    def test_counter_owns_the_values_in_a_dictionary(self):
+        c = PCounter(10, 4)
+        self.assertEqual(c.values, {"capacity": 10, "occupied": 4})
+
+    def test_default_values(self):
+        c = PCounter()
+        self.assertEqual(c.values, {"capacity": 50, "occupied": 0})
+
+    def test_change_in_dictionary_reaches_counter(self):
+        # a UI writes into the dictionary that main gave it
+        c = PCounter(10, 4)
+        c.values["capacity"] = 30
+        c.values["occupied"] = 6
+        self.show("dictionary changed by a UI", c)
+        self.assertEqual(c.free, 24)
+
+    def test_cars_are_visible_in_dictionary(self):
+        # the UIs see the cars without asking the counter
+        c = PCounter(10, 4)
+        c.apply(IN)
+        self.assertEqual(c.values["occupied"], 5)
+
+    def test_start_occupied_is_never_negative(self):
+        c = PCounter(10, -3)
+        self.assertEqual(c.values["occupied"], 0)

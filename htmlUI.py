@@ -84,13 +84,14 @@ class WebUI(IUI):
         while not configured:
             time.sleep(0.1)
 
-        # Pass the numbers on to main.py (main.py reads capacity and start_occupied)
-        self.capacity = total
-        self.start_occupied = occupied_at_start
+        # Write the numbers into the dictionary of the counter (main gave it to us), the counter owns them
+        self.values["capacity"] = total
+        self.values["occupied"] = occupied_at_start
 
     def show(self, occupied, free_now):
-        global free
+        global free, total
         free = free_now   # just remember it, the browser fetches the number itself
+        total = self.values["capacity"]   # another UI may have changed the capacity, so the page must follow
         if exit_requested:
             self.running = False   # main.py stops its loop, then stops the sensor and the UI
 

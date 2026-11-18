@@ -5,6 +5,39 @@
 - Explanation of why simple (What features could be added)
 - Why lists instead of qeues
 - Why abstract classes instead of Interfaces
+
+
+# Vorschlag:
+### Interesting code: the counter owns the numbers (`@property` and setter)
+
+```python
+# counter.py - the counter owns capacity and occupied in one dictionary
+class PCounter:
+    def __init__(self, capacity: int = 50, occupied: int = 0):
+        self.values = {"capacity": capacity, "occupied": max(0, occupied)}
+
+    @property
+    def occupied(self) -> int:
+        return self.values["occupied"]
+
+    @occupied.setter
+    def occupied(self, occupied: int):
+        self.values["occupied"] = max(0, occupied)   # never below 0, whoever sets it
+
+    def apply(self, direction: Direction):
+        self.occupied = self.occupied + direction.value   # no extra check needed
+```
+
+The numbers live in the dictionary `counter.values`. Main gives this one dictionary to every UI,
+so all UIs work on the same numbers and no UI keeps its own copy.
+
+`@property` lets the rest of the code read `counter.occupied` like a normal variable, and the
+setter runs whenever something is assigned (`counter.occupied = ...`). The rule "never below 0"
+is written in one single place, the setter, and not repeated everywhere the number is changed.
+This makes the rest of the code simpler and easier to read: `apply()` is a single line, and
+`counter.capacity = 20` is enough to change the capacity, so no extra method like
+`set_capacity()` is needed.
+
 # Project Documentation: ParkingCounter
 
 ## 1. Introduction, Objectives, Constraints

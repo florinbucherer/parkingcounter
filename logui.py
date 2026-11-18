@@ -8,14 +8,14 @@ class LogUI(IUI):
 
     It knows nothing about other UIs, the sensor or the counter. It only gets the numbers
     through show() and writes a line directly, no own thread needed because a short line is written very fast.
-    The file is given when the instance is created, e.g. LogUI("parkingcounter.log").
+    The dictionary of the counter and the file are given when the instance is created, e.g. LogUI(counter.values, "parkingcounter.log").
     It is added to the program by putting it into the list extra_uis in main.py and removed by taking it out.
 
     One line per change:  time | event | free lots | occupied lots
     """
 
-    def __init__(self, log_file):
-        super().__init__()
+    def __init__(self, values, log_file):
+        super().__init__(values)
         self.log_file = log_file   # path of the text file, given by the one who creates the LogUI
         self._last = None          # (occupied, free) from the last call of show()
 

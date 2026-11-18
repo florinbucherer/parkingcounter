@@ -6,6 +6,11 @@ from dummy_ui import ConsoleUI
 from ui_interface import IUI
 
 
+def make_values(capacity=50, occupied=0):
+    """The dictionary that main would take from the counter."""
+    return {"capacity": capacity, "occupied": occupied}
+
+
 class SimpleUI(IUI):
     """Smallest possible UI, only to test the interface."""
 
@@ -20,27 +25,31 @@ class TestIUI(unittest.TestCase):
 
     def test_interface_cannot_be_created(self):
         with self.assertRaises(TypeError):
-            IUI()
+            IUI({})
 
-    def test_default_values(self):
-        ui = SimpleUI()
-        self.assertEqual(ui.capacity, 50)
-        self.assertEqual(ui.start_occupied, 0)
+    def test_ui_has_no_numbers_of_its_own(self):
+        shared = {"capacity": 10, "occupied": 2}
+        ui = SimpleUI(shared)
+        self.assertIs(ui.values, shared)   # the same dictionary, not a copy
         self.assertTrue(ui.running)
 
+    def test_values_are_required(self):
+        with self.assertRaises(TypeError):
+            SimpleUI()
+
     def test_stop_does_nothing(self):
-        ui = SimpleUI()
+        ui = SimpleUI({})
         ui.stop()
         self.assertTrue(ui.running)
 
     def test_default_start_asks_capacity(self):
-        ui = SimpleUI()
+        ui = SimpleUI({})
         with patch("builtins.input", return_value="30"):
             IUI.start(ui)
-        self.assertEqual(ui.capacity, 30)
+        self.assertEqual(ui.values["capacity"], 30)
 
     def test_default_show_prints_numbers(self):
-        ui = SimpleUI()
+        ui = SimpleUI({})
         with patch("sys.stdout", new=io.StringIO()) as out:
             IUI.show(ui, 3, 7)
         self.assertIn("Occupied : 3", out.getvalue())
@@ -65,7 +74,7 @@ class TestConsoleUIParse(unittest.TestCase):
 class TestConsoleUIAsk(unittest.TestCase):
 
     def setUp(self):
-        self.ui = ConsoleUI()
+        self.ui = ConsoleUI(make_values())
 
     def ask(self, answers, **kwargs):
         # input() returns the answers one after the other, output is hidden
@@ -91,14 +100,30 @@ class TestConsoleUIAsk(unittest.TestCase):
 class TestConsoleUIStart(unittest.TestCase):
 
     def test_start_sets_values(self):
-        ui = ConsoleUI()
+        ui = ConsoleUI(make_values())
         with patch("builtins.input", side_effect=["20", "5"]), \
              patch("sys.stdout", new=io.StringIO()), \
              patch("dummy_ui.threading.Thread") as thread:
             ui.start()
-        self.assertEqual(ui.capacity, 20)
-        self.assertEqual(ui.start_occupied, 5)
+        self.assertEqual(ui.values, {"capacity": 20, "occupied": 5})
         thread.return_value.start.assert_called_once()   # input thread was started
+
+    def test_start_writes_into_the_dictionary_of_the_counter(self):
+        counter_values = make_values()   # main gives this dictionary to the UI
+        ui = ConsoleUI(counter_values)
+        with patch("builtins.input", side_effect=["20", "5"]), \
+             patch("sys.stdout", new=io.StringIO()), \
+             patch("dummy_ui.threading.Thread"):
+            ui.start()
+        self.assertEqual(counter_values, {"capacity": 20, "occupied": 5})
+
+    def test_questions_use_the_numbers_of_the_counter_as_default(self):
+        ui = ConsoleUI({"capacity": 40, "occupied": 7})
+        with patch("builtins.input", side_effect=["", ""]), \
+             patch("sys.stdout", new=io.StringIO()), \
+             patch("dummy_ui.threading.Thread"):
+            ui.start()
+        self.assertEqual(ui.values, {"capacity": 40, "occupied": 7})
 
 
 class TestConsoleUIShow(unittest.TestCase):
@@ -109,17 +134,17 @@ class TestConsoleUIShow(unittest.TestCase):
         return out.getvalue()
 
     def test_show_prints_numbers(self):
-        text = self.show(ConsoleUI(10), 4, 6)
+        text = self.show(ConsoleUI(make_values(10)), 4, 6)
         self.assertIn("Free:   6", text)
         self.assertIn("Occupied:   4 / 10", text)
         self.assertNotIn("FULL", text)
 
     def test_show_full(self):
-        text = self.show(ConsoleUI(10), 10, 0)
+        text = self.show(ConsoleUI(make_values(10)), 10, 0)
         self.assertIn("FULL", text)
 
     def test_same_state_prints_only_once(self):
-        ui = ConsoleUI(10)
+        ui = ConsoleUI(make_values(10))
         self.show(ui, 4, 6)
         self.assertEqual(self.show(ui, 4, 6), "")
 
@@ -132,27 +157,27 @@ class TestConsoleUIReadInput(unittest.TestCase):
         return out.getvalue()
 
     def test_number_changes_capacity(self):
-        ui = ConsoleUI(10)
+        ui = ConsoleUI(make_values(10))
         self.read(ui, ["60", "q"])
-        self.assertEqual(ui.capacity, 60)
+        self.assertEqual(ui.values["capacity"], 60)
 
     def test_q_stops_ui(self):
-        ui = ConsoleUI(10)
+        ui = ConsoleUI(make_values(10))
         self.read(ui, ["q"])
         self.assertFalse(ui.running)
 
     def test_quit_word_stops_ui(self):
-        ui = ConsoleUI(10)
+        ui = ConsoleUI(make_values(10))
         self.read(ui, ["  QUIT "])
         self.assertFalse(ui.running)
 
     def test_wrong_input_prints_message(self):
-        ui = ConsoleUI(10)
+        ui = ConsoleUI(make_values(10))
         text = self.read(ui, ["abc", "q"])
         self.assertIn("Please enter a positive whole number", text)
-        self.assertEqual(ui.capacity, 10)
+        self.assertEqual(ui.values["capacity"], 10)
 
     def test_end_of_input_stops_loop(self):
-        ui = ConsoleUI(10)
+        ui = ConsoleUI(make_values(10))
         self.read(ui, EOFError())
         self.assertTrue(ui.running)

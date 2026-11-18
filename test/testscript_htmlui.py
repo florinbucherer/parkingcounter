@@ -75,14 +75,29 @@ class TestWebUI(unittest.TestCase):
         htmlUI.total = 30
         htmlUI.occupied_at_start = 5
         htmlUI.configured = True   # as if the user pressed Start
-        ui = WebUI()
+        ui = WebUI({"capacity": 50, "occupied": 0})
         # no real server and no real browser
         with patch("htmlUI.HTTPServer"), patch("htmlUI.threading.Thread"), patch("htmlUI.webbrowser.open") as browser:
             ui.start()
         browser.assert_called_once_with("http://localhost:8000")
-        self.assertEqual(ui.capacity, 30)
-        self.assertEqual(ui.start_occupied, 5)
+        self.assertEqual(ui.values, {"capacity": 30, "occupied": 5})
+
+    def test_start_writes_into_the_dictionary_of_the_counter(self):
+        counter_values = {"capacity": 50, "occupied": 0}   # main gives this dictionary to the UI
+        htmlUI.total = 30
+        htmlUI.occupied_at_start = 5
+        htmlUI.configured = True
+        ui = WebUI(counter_values)
+        with patch("htmlUI.HTTPServer"), patch("htmlUI.threading.Thread"), patch("htmlUI.webbrowser.open"):
+            ui.start()
+        self.assertEqual(counter_values, {"capacity": 30, "occupied": 5})
+
+    def test_show_follows_capacity_change_of_another_ui(self):
+        ui = WebUI({"capacity": 50, "occupied": 0})
+        ui.values["capacity"] = 80   # e.g. changed in another UI
+        ui.show(10, 70)
+        self.assertEqual(htmlUI.total, 80)
 
     def test_show_remembers_free_number(self):
-        WebUI().show(10, 15)
+        WebUI({"capacity": 50, "occupied": 0}).show(10, 15)
         self.assertEqual(htmlUI.free, 15)
