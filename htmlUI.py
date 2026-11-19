@@ -73,8 +73,7 @@ class WebUI(IUI):
 
     def start(self):
         # Start the web server in its own thread so the program does not get stuck.
-        # 127.0.0.1 = only this computer may connect (0.0.0.0 would let everybody in the network press Exit).
-        self._server = HTTPServer(("127.0.0.1", 8000), Handler)
+        self._server = HTTPServer(("0.0.0.0", 8000), Handler)
         threading.Thread(target=self._server.serve_forever, daemon=True).start()
 
         # Open the browser

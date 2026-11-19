@@ -4,7 +4,7 @@ from vehicle_sensor import VehicleSensor
 from htmlUI import WebUI                   # Import UI
 from logui import LogUI                   # Import second UI (log file)
 from counter import PCounter
-
+os.environ["TF_CPP_MIN_LOG_LEVEL"] = "2" // disable TensorFlow debug messages, only show errors
 
 def main():
     events = []                           # shared list to queue events like car in or car out: sensor appends, main removes
