@@ -1,8 +1,8 @@
 # ToDo
 - Description from which Side must Camera be pointed.
-- Description User Guide how long to wait until program works at startup
+- Description User Guide how long to wait until program works at startup/
 - Explanation of Abstraction
-- Explanation of why simple (What features could be added)
+- Explanation of why simple (What features could be added)/done See 4.1 
 - Why lists instead of qeues
 - Why abstract classes instead of Interfaces
 
@@ -59,15 +59,13 @@ The main goal is to create a working prototype (MVP) that:
 | Camera detection (input/output, reliability) | | Optimisation (predictions, alerts) |
 
 ### 1.3 MVP (Minimum Viable Product)
--   **Control unit:** A computer that can run Python
--   **Sensors:** A Webcam
--   **Output:** User Interface
--   **Software:** Python script using an image detection library.
-*   **Control unit:** A computer that can run Python
-*   **Sensors:** A Webcam
-*   **Output:** User Interface
-*   **Software:** Python script using a image detection library.
-The Product should fullfill as a minimum the Basic Requirements.
+
+**Functional scope (what the MVP can do)**
+-   Detect with a webcam when a car enters or leaves the parking lot.
+-   Count the cars and calculate the free parking spaces automatically.
+-   Show the number of free spaces in a user interface in real time.
+
+The Product must fulfill as a minimum the Basic Requirements (see 1.2).
 
 ### 1.4 Constraints
 -   Programming language: **Python**.
@@ -76,7 +74,18 @@ The Product should fullfill as a minimum the Basic Requirements.
 
 ---
 
-## 2. Build Instructions
+## 2. Technical setup
+-   **Control unit:** A computer that can run Python
+-   **Sensors:** A Webcam
+-   **Output:** User Interface
+-   **Software:** Python script using an image detection library.
+
+## 2.1 How to Install the Camera
+Where to install the webcam ? 
+![camera position parking entrance](Graphics/camera_position_parking_entrance.svg)
+
+
+## 2.2 Build Instructions
 To set up the project locally, follow these steps:
 1.  **Clone the repository:** `git clone https://github.com/florinbucherer/parkingcounter`
 2.  **Create a virtual environment:** `python -m venv venv`
@@ -85,6 +94,8 @@ To set up the project locally, follow these steps:
 5.  **Position the camera on the correct side of the road and point it towards the street. For the Parking Area of DHBW Lörrach mount it on the roof of Building D facing the street.**
 6.  **Open the UI on a device in the same Network by typing the IP-Adress of the Host Computer followed by :800 into the browser**
 7.  **Enjoy :)**
+
+
 
 ---
 
@@ -114,6 +125,16 @@ To set up the project locally, follow these steps:
     - Develop the CSS code for the UI,
     - New feature: Stats on the occupation of the parking lot,
     - Testing the software.
+
+## 4.1 Possible extensions of the project 
+    
+- Connect multiple Parkingcounter together and connect them all the a The UI to have a complete view of the parking situation in a city, for exemple in the DHBW beeing able to see where it is possible to parc (P1,P2 or P3)
+    
+- Code a Phone App for the Parkingcounter
+    
+- extend the recognition system for it to be able to analyse what type of vehicle is comming in the parking lot (car, truck, delivery truck, scooter, motobike, bike etc...)
+    
+- adding a Licence plate reader, it could be used to monetize every parking lot without the need to install gates. 
 
 ---
 
