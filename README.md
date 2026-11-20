@@ -193,40 +193,7 @@ In this sprint, a working UI, Counter, Recognition system was coded. they were a
 | Task 1.14 | Build the central system that connects the counter to everything with a class. | 3.0 |
 
 ---
-
-### 7.2 Key Code Snippets
-Counter that makes the calculations:
-```python
-# Counter core class updating free space counts dynamically
-class PCounter:
-    def __init__(self, capacity: int = 50, occupied: int = 0):
-        self.values = {"capacity": capacity, "occupied": max(0, occupied)}
-
-    @property
-    def capacity(self) -> int:
-        return self.values["capacity"]
-
-    @capacity.setter
-    def capacity(self, capacity: int):
-        self.values["capacity"] = capacity
-
-    @property
-    def occupied(self) -> int:
-        return self.values["occupied"]
-
-    @occupied.setter
-    def occupied(self, occupied: int):
-        self.values["occupied"] = max(0, occupied)
-
-    def apply(self, direction: Direction):
-        self.occupied = self.occupied + direction.value   # the setter keeps it from going below 0
-
-    @property
-    def free(self) -> int:
-        return max(0, self.capacity - self.occupied)
-
-```
-### 7.3 UML Diagrams
+### 7.2 UML Diagrams
 - **Use Case Diagram:** Shows how the different components work together.
 ![Use Case Diagram](Graphics/Use_case_diagramm.svg)
 
@@ -264,7 +231,7 @@ sequenceDiagram
 
 **Status of the diagrams:** Use Case (done, above), Data Flow (done, above), Sequence (done, above), Class (done, see 7.4), State (done, see 8.3), Component (placeholder), Package (placeholder).
 
-### 7.4 Architecture: Abstraction and Replaceable Parts
+### 7.3 Architecture: Abstraction and Replaceable Parts
 The program is split into a few small parts. Each part has **one job**, and **only `main.py` knows all of them**. That is why a part can be replaced without touching the others, this makes the programm very flexible. For example the camera sensor could easily be exchanged with a light barrier, all that matters is that it inherits from the ISensor superclass. The same is for the UI. Even the counter could be replaced but it would need to be structured the same way with the values dictionarry because it has no superlass. We deliberately chose to not have a superclass for the counter because its not probable that someone will want to exchange the counter, however the UI and the Sensor must be exchangeble.
 
 | Part | Files | Abstract class | Implementations | Could be replaced by |
@@ -357,7 +324,7 @@ classDiagram
     IUI .. PCounter : share the same values dict
 ```
 
-### 7.5 Test Cases Derived from the Acceptance Criteria (Sprint 1)
+### 7.4 Test Cases Derived from the Acceptance Criteria (Sprint 1)
 
 | ID | Acceptance criterion | Test case | Expected result | Test | Status |
 | :--- | :--- | :--- | :--- | :--- | :--- |
