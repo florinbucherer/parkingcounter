@@ -5,7 +5,6 @@ from htmlUI import WebUI                   # Import UI
 from logui import LogUI                   # Import second UI (log file)
 from counter import PCounter
 
-
 def main():
     events = []                           # shared list to queue events like car in or car out: sensor appends, main removes
 
