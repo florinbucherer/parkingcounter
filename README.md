@@ -1,7 +1,3 @@
-#ToDo
-- Key Code snipped update code
-- Overview Key Code snippeds and following
-- Add Improvement ideas and implementations of what we learned in class (eg. State machine...)
 # Project Documentation: ParkingCounter
 
 ## 1. Introduction, Objectives, Constraints
