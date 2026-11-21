@@ -293,52 +293,52 @@ In this sprint, the recognition system was adapted to our program (own thread, w
 
 | Task-ID | Description | Effort (h) |
 | :--- | :--- | :--- |
-| Task 2.1 | Document each function of the code directly inside of it. | TBD |
-| Task 2.2 | Write in the GitHub the important lines of code and explain how they work (see 8.2). | TBD |
-| Task 2.3 | Finish the README: from which side the camera must be pointed, how long to wait until the program works at startup, explanation of abstraction, why lists instead of queues, why abstract classes instead of interfaces, why the program is kept simple. *(open)* | TBD |
+| Task 2.1 | Document each function of the code directly inside of it. | 2 |
+| Task 2.2 | Write in the GitHub the important lines of code and explain how they work (see 8.2). | 0.5 |
+| Task 2.3 | Finish the README: from which side the camera must be pointed, how long to wait until the program works at startup, explanation of abstraction, why lists instead of queues, why abstract classes instead of interfaces, why the program is kept simple.  | 2 |
 
 **User Story US9:** *"As a User, I want to be able to trust the recognition program, so that the counter can be trusted."*
 
 | Task-ID | Description | Effort (h) |
 | :--- | :--- | :--- |
-| Task 2.4 | Write unit tests for the counter, the sensors, the UIs and the main program. | TBD |
-| Task 2.5 | Test the counter in combination with the recognition system (real video or camera). *(open)* | TBD |
-| Task 2.6 | Set a percentage of errors. *(open)* | TBD |
-| Task 2.7 | Analyse the errors and see how we could reduce them. *(open)* | TBD |
+| Task 2.4 | Write unit tests for the counter, the sensors, the UIs and the main program. | 3.5 |
+| Task 2.5 | Test the counter in combination with the recognition system (real video or camera).  | 0.5 |
+| Task 2.6 | Set a percentage of errors.  | 0.5 |
+| Task 2.7 | Analyse the errors and see how we could reduce them.  | 0.5 |
 
 **User Story US10:** *"As a User, I want to have additional data on the parking situation in the parking lot (stats)."*
 
 | Task-ID | Description | Effort (h) |
 | :--- | :--- | :--- |
-| Task 2.8 | Add a clock to the car counting system: every change gets a time stamp in a log file (time, event, free and occupied lots). | TBD |
+| Task 2.8 | Add a clock to the car counting system: every change gets a time stamp in a log file (time, event, free and occupied lots). | 2 |
 | Task 2.9 | Implement a system to show the stats of how many cars are usually on the parking lot at a given time/date. *(open)* | TBD |
-| Task 2.10 | Integrate it with the UI. *(open)* | TBD |
+| Task 2.10 | Integrate it with the UI. *(open)* | 1 |
 
 **User Story US11:** *"As a User, I want to have a good looking and simple interface, to save some time."*
 
 | Task-ID | Description | Effort (h) |
 | :--- | :--- | :--- |
-| Task 2.11 | Find or build a graphic template for the UI to look good and be easy to understand. *(open)* | TBD |
-| Task 2.12 | Write the CSS code (at the moment there is only a short style block to center the page). *(open)* | TBD |
+| Task 2.11 | Find or build a graphic template for the UI to look good and be easy to understand. *(open)* | 0.5 |
+| Task 2.12 | Write the CSS code (at the moment there is only a short style block to center the page). *(open)* | 2 |
 
 **User Story US12:** *"As a coder, I want to build an easy to modify UI, so that I can adapt it to every device and every use."*
 
 | Task-ID | Description | Effort (h) |
 | :--- | :--- | :--- |
-| Task 2.13 | Find a way to build a UI that can work on both phone and PC: a web page served by a small web server in the local network. | TBD |
-| Task 2.14 | Keep the page (`index.html`) separate from the Python code, so the design can be changed without touching the program. | TBD |
-| Task 2.15 | Add an exit button that ends the program and closes the page. | TBD |
-| Task 2.16 | Check the page on different devices and adapt it if necessary. *(open)* | TBD |
+| Task 2.13 | Find a way to build a UI that can work on both phone and PC: a web page served by a small web server in the local network. | 0.5 |
+| Task 2.14 | Keep the page (`index.html`) separate from the Python code, so the design can be changed without touching the program. | 0 |
+| Task 2.15 | Add an exit button that ends the program and closes the page. | 0.5 |
+| Task 2.16 | Check the page on different devices and adapt it if necessary. *(open)* | 0.5 |
 
 **User Story US13:** *"As a coder, I want to adapt the recognition system for it to work with our program."*
 
 | Task-ID | Description | Effort (h) |
 | :--- | :--- | :--- |
-| Task 2.17 | Think about how the recognition system can be used to count and how to set an output for it. | TBD |
-| Task 2.18 | Build the output to the counter: the sensor puts IN/OUT events into the shared list that the main program reads. | TBD |
-| Task 2.19 | Run the detection in its own thread, so the program does not freeze. | TBD |
-| Task 2.20 | Connect the sensor to a webcam (video input 0) in addition to a video file. | TBD |
-| Task 2.21 | Add `requirements.txt` for the camera and detection libraries. | TBD |
+| Task 2.17 | Think about how the recognition system can be used to count and how to set an output for it. | 1 |
+| Task 2.18 | Build the output to the counter: the sensor puts IN/OUT events into the shared list that the main program reads. | 1 |
+| Task 2.19 | Run the detection in its own thread, so the program does not freeze. | 2 |
+| Task 2.20 | Connect the sensor to a webcam (video input 0) in addition to a video file. | 1.5 |
+| Task 2.21 | Add `requirements.txt` for the camera and detection libraries. | 0.5 |
 
 ---
 
