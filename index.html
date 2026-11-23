@@ -1,32 +1,111 @@
 <style>
-  /* Css to format the content */
-  body { margin: 0; height: 100vh; display: flex; flex-direction: column;
-         justify-content: center; align-items: center; text-align: center; font-family: sans-serif; }
+  /* CSS to format the content */
+
+  /* Page layout: centers everything vertically and horizontally */
+  body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+        }
+ 
+        /* White, semi-transparent box that holds each "screen" (settings, counter, goodbye) */
+        .card {
+            background: rgba(255, 255, 255, 0.92);
+            padding: 30px;
+            border-radius: 12px;
+            width: 420px;
+            margin: 50px auto;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+            text-align: center;
+        }
+ 
+        /* Grey box around the input fields and buttons; content is centered */
+        .capacity-control {
+            margin: 20px 0;
+            padding: 15px;
+            background: #eef2f5;
+            border-radius: 8px;
+            text-align: center;
+        }
+ 
+        /* Style of the number inputs inside the grey box */
+        .capacity-control input {
+            padding: 8px;
+            width: 90px;
+            font-size: 16px;
+            text-align: center;
+        }
+ 
+        /* Style of the buttons inside the grey box (Start and Exit) */
+        .capacity-control button {
+            padding: 8px 16px;
+            font-size: 15px;
+            background-color: #2c3e50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+ 
+        .capacity-control button:hover {
+            background-color: #34495e;
+        }
+ 
+        /* Headings */
+        h1 {
+            color: #2c3e50;
+            margin-top: 0;
+        }
+       
+        /* The big number showing the free parking lots */
+        #numbers {
+            font-size: 80px;
+            color: #2c3e50;
+            margin: 10px 0 0 0;
+        }
 </style>
 
-<!-- Settings Menu to initalize the capacity and initiallyoccupied lots -->
-<div id="settings">
+<!-- Settings screen: initializes the capacity and the initially occupied lots -->
+<!-- The "card" class gives it the white box look -->
+<div id="settings" class="card">
   <h1>Settings</h1>
-  Total parking lots: <input id="capacity" type="number" min="1" value="50"><br><br>
-  Already occupied: <input id="occupied" type="number" min="0" value="0"><br><br>
-  <button onclick="save()">Start</button> <!-- run the function save() when the button is pressed -->
+
+  <!-- The "capacity-control" class gives the inputs and the button their styling -->
+  <div class="capacity-control">
+    <!-- Each label text is followed by a line break, so the input field sits below it -->
+    Total parking lots:<br>
+    <input id="capacity" type="number" min="1" value="50"><br><br>
+    Already occupied:<br>
+    <input id="occupied" type="number" min="0" value="0"><br><br>
+    <button onclick="save()">Start</button> <!-- runs the function save() when the button is pressed -->
+  </div>
 </div>
 
-<!-- The actual counter content-->
-<div id="display" style="display: none">
+<!-- Counter screen: shows the number of free parking lots (hidden until the settings are saved) -->
+<div id="display" class="card" style="display: none">
   <h1>Free parking lots</h1>
-  <h1 id="numbers" style="font-size: 80px"></h1>
-  <button onclick="exitApp()">Exit</button> <!-- tells the Python script to end the program -->
+  <!-- Filled with the current number by the script below; the size is set in the CSS (#numbers) -->
+  <h1 id="numbers"></h1>
+
+  <!-- The "capacity-control" class gives the Exit button the same look as the Start button -->
+  <div class="capacity-control">
+    <button onclick="exitApp()">Exit</button> <!-- tells the Python script to end the program -->
+  </div>
 </div>
 
 <!-- Message after exit (shown if the browser does not allow closing the tab) -->
-<div id="bye" style="display: none">
+<div id="bye" class="card" style="display: none">
   <h1>Program ended</h1>
   You can close this tab.
 </div>
 
 <script>
-  // the function to send the settings to the python script with the keyword "set"
+  // Sends the settings to the Python script via the "/set/<capacity>/<occupied>" URL
   function save() {
     const capacity = document.getElementById("capacity").value;
     const occupied = document.getElementById("occupied").value;
@@ -35,7 +114,7 @@
 
   let ended = false   // becomes true after exit, so the page stops asking for the status
 
-  // tell the Python script to end, then try to close this tab
+  // Tells the Python script to end, then tries to close this tab
   async function exitApp() {
     ended = true
     await fetch("/exit")
@@ -45,7 +124,9 @@
     window.close()   // only works in some browsers, otherwise the message above stays
   }
 
-  // get the status from the Python script every 0.5 seconds
+  // Asks the Python script for the status every 0.5 seconds:
+  // - empty text    -> settings not saved yet -> show the settings screen
+  // - text (number) -> show the counter screen with that number
   setInterval(async () => {
     if (ended) return
     const text = await (await fetch("/status")).text();
