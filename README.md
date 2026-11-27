@@ -2,7 +2,7 @@
 
 ## 1. Introduction, Objectives, Constraints
 ### 1.1 Introduction
-ParkingCounter is a program that uses a webcam to monitor the entrance of a parking area. It detects vehicles entering and leaving the parking area, keeps track of occupied and available spaces and displays the current number of available parking lots through an interface. The system is developed for the specific parking area above the DHBW Lörrach and is designed for a camera mounted on the roof of building D facing the street that enters the Parking Area. The program could be used for other similar situations too, however when the camera is installed on the other side of the street or the Parking Area is on the other side, the code must be changed accordingly so the program knows in which direction cars are entering or exiting the Area. As we assume a fixed installation we did not implement a setting to change the direction.
+ParkingCounter is a program that uses a webcam to monitor the entrance of a parking area. It detects vehicles entering and leaving the parking area, keeps track of occupied and available spaces and displays the current number of available parking lots through an interface. The System is developed for the specific Parking Area above the DHBW-Lörrach and is designed as the Camera would be mounted on the roof of building D facing the street that enters the Parking Area. The Programm could be used for other similar situations too, however when the camera is installed on the other side of the street or the Parking Area is on the other side, the code must be changed accordingly so the programm knows in which direction cars are entering or exiting the Area. As we assume a fix installed installation we did not implement a setting to change the direction.
 
 ### 1.2 Objectives
 The main goal is to create a working prototype (MVP) that:
@@ -40,18 +40,17 @@ The Product must fulfill as a minimum the Basic Requirements (see 1.2).
 -   **Output:** User Interface
 -   **Software:** Python script using an image detection library.
 
-### 2.1 How to Install the Camera
-Where to install the webcam? 
+## 2.1 How to Install the Camera
+Where to install the webcam ? 
 ![camera position parking entrance](Graphics/camera_position_parking_entrance.svg)
 
 
-### 2.2 Build Instructions
+## 2.2 Build Instructions
 To set up the project locally, follow these steps:
 1.  **Clone the repository:** `git clone https://github.com/florinbucherer/parkingcounter`
-2.  **Open the project folder:** `cd parkingcounter`
-3.  **Create a virtual environment:** `python -m venv venv`
-4.  **Install dependencies:** `pip install -r requirements.txt`
-5.  **Follow the User Guide** (see chapter 3)
+2.  **Create a virtual environment:** `python -m venv venv`
+3.  **Install dependencies:** `pip install -r requirements.txt`
+4.  **Follow the User Guide** (see chapter 3)
 
 
 
@@ -60,26 +59,24 @@ To set up the project locally, follow these steps:
 ## 3. Brief User Guide
 1.  Start the program with `python main.py`. The browser opens the setup page automatically (`http://localhost:8000`).
 2.  Enter the number of parking lots and the number of already occupied parking lots at the start and press **Start**. The setup can only be sent once per program start.
-3.  **Wait until the window "Vehicle Detection" with the camera picture appears.** The program first has to load the detection model and TensorFlow (see 3.1), this takes a while. **During this time no cars are counted.**
+3.  **Wait until the window "Vehicle Detection" with the camera picture appears.** The program first has to load the detection model and TensorFlow (see 2.1), this takes a while **During this time no cars are counted.**
 4.  **Position the camera on the correct side of the road and point it towards the street. For the Parking Area of DHBW Lörrach mount it on the roof of Building D facing the street.** Align it with the help of the camera window:
     - The **red line** must lie across the road, so that every car that drives in or out crosses it. The whole frame of the car should be in the line, the camera should be at least as far from the street that a whole car is visible in the camera window (No part cut off).
     - Cars that **enter** the parking area must cross the line from **right to left** in the picture, cars that **leave** from **left to right**. If your camera sees it the other way round, IN and OUT must be swapped in the code (the direction is fixed in the code, `_crossing_direction` in `vehicle_sensor.py`).
     - Check that passing cars get a coloured frame with a green track.
 5.  **Minimize the camera window.** The detection continues in the background.
-6.  The free parking lots are shown on the web page. It opens on the host computer. To open it from another device, type the IP address of the host computer followed by `:8000` into the browser. Please be aware of the network note below.
+6.  The free parking lots are shown on the web page. It opens on the host computer. To open it from another device, type the IP address of the host computer followed by `:8000` into the Browser.Please be aware of the network note below.
 7.  To end the program press the **Exit** button on the web page (or `Ctrl+C` in the console).
 8.  **Enjoy :)**
 
 > **Careful in the camera window:** the key `q` stops the detection (the web page stays open, but **nothing is counted any more**). The key `p` pauses the detection until `p` is pressed again.
->
-> **Network note:** When used with other devices in the same network everybody in the network can also press **Exit**, so only allow trustworthy devices in the network.
+> **Network note:** When used with other devices in the same network everybody in the network can also press **Exit**, so only allow trusthworty devices in the network.
 
 
 ### 3.1 Warnings in the Console (TensorFlow)
 When the program starts, the console fills with many warnings and info messages, for example about deprecated functions, about CPU instructions or about a missing graphics card (GPU / CUDA). They are printed by **TensorFlow**, which loads the appearance model of the tracker (`config/mars-small128.pb`), and **not** by our code. **They can be ignored** as long as the camera window "Vehicle Detection" appears (see chapter 3).
 
 An error would be something different: a message with `Traceback` and a text like `Could not open video source` means that the camera does not work. The web page then keeps running, but no cars are counted.
-
 ---
 
 ## 4. Release Plan with Expansion Stages
@@ -99,15 +96,15 @@ An error would be something different: a message with `Traceback` and a text lik
     - Develop the CSS code for the UI,
     - Testing the software.
 
-### 4.1 Possible extensions of the project 
+## 4.1 Possible extensions of the project 
     
-- Connect multiple Parkingcounter together and connect them all to one UI to have a complete view of the parking situation in a city, for example at the DHBW being able to see where it is possible to park (P1,P2 or P3)
+- Connect multiple Parkingcounter together and connect them all the a The UI to have a complete view of the parking situation in a city, for exemple in the DHBW beeing able to see where it is possible to parc (P1,P2 or P3)
     
 - Code a Phone App for the Parkingcounter
     
-- Extend the recognition system for it to be able to analyse what type of vehicle is coming in the parking lot (car, truck, delivery truck, scooter, motorbike, bike etc...)
+- extend the recognition system for it to be able to analyse what type of vehicle is comming in the parking lot (car, truck, delivery truck, scooter, motobike, bike etc...)
     
-- Adding a licence plate reader, it could be used to monetize every parking lot without the need to install gates. 
+- adding a Licence plate reader, it could be used to monetize every parking lot without the need to install gates. 
 
 ---
 
@@ -134,7 +131,7 @@ Requirements are described in the form of user stories with acceptance criteria,
 ---
 
 ## 6. Sprint 0 Documentation (Preparation & Setup)
-Sprint 0 focused on creating the organizational and technical foundation for developing the parking space occupancy detector as well as establishing **Clean Management** (requirements, priorities, and project timeline), as well as building a Jira space and setting up the GitHub repository.
+Sprint 0 focused on creating the organizational and technical foundation for developing the parking space occupancy detector as well as establishing **Clean Management** (requirements, priorities, and project timeline). also Building a Jira space and setting Up the github repository.
 
 ### 6.1 User Stories & Task Lists
 
@@ -177,7 +174,7 @@ Sprint 0 focused on creating the organizational and technical foundation for dev
 ---
 
 ## 7. Sprint 1 Core Development (MVP Implementation)
-In this sprint, a working UI, counter and recognition system were coded. They were also connected together. 
+In this sprint, a working UI, Counter, Recognition system was coded. they were also connected together. 
 
 ### 7.1 User Stories & Task Lists (Estimation in Hours)
 
@@ -216,24 +213,24 @@ In this sprint, a working UI, counter and recognition system were coded. They we
 | Task 1.14 | Build the central system that connects the counter to everything with a class. | 3.0 |
 
 ---
-### 7.4 Test Cases Derived from the Acceptance Criteria (Sprint 1)
+### 7.2 Test Cases Derived from the Acceptance Criteria (Sprint 1)
 
 | ID | Acceptance criterion | Test case | Expected result | Test | Status |
 | :--- | :--- | :--- | :--- | :--- | :--- |
 | TC-4.1 | **US4:** the output of the recognition system increments/decrements the counter accurately | Capacity 10, 2 occupied at the start. The sensor delivers IN, IN, OUT. | 3 occupied, 7 free | unit: `test_events_are_counted` (main) | OK |
 | TC-4.2 | US4 | The fake sensor runs one round. | exactly one event (IN or OUT) is in the list | unit: `test_loop_adds_one_event` | OK |
-| TC-4.3 | US4 | A real car drives in across the red line (right to left). | occupied +1, free -1 | manual | open |
+| TC-4.3 | US4 | A real car drives in across the red line (right to left). | occupied +1, free -1 | manual | OK |
 | TC-5.1 | **US5:** the UI shows the free spaces in real time | Open `http://localhost:8000`. | the settings page appears | unit: `test_main_page` | OK |
 | TC-5.2 | US5 | Ask `/status` before the settings are sent. | empty answer (page stays on the setup form) | unit: `test_status_empty_before_settings` | OK |
 | TC-5.3 | US5 | Send `/set/50/10`, then ask `/status`. | `40 / 50` | unit: `test_status_after_settings` | OK |
 | TC-5.4 | US5 | The free number changes to 12. | `/status` answers `12 / 50` | unit: `test_status_follows_free_number` | OK |
-| TC-5.5 | US5 | A car passes. Watch the page on a PC and on a phone. | both show the new number after about 1 s | manual | open |
+| TC-5.5 | US5 | A car passes. Watch the page on a PC and on a phone. | both show the new number after about 1 s | manual | OK |
 | TC-6.1 | **US6:** the recognition system detects the direction | A car moves from left to right through the line. | OUT | unit: `test_touching_the_line_from_left_is_exit` | OK |
 | TC-6.2 | US6 | A car moves from right to left through the line. | IN | unit: `test_touching_the_line_from_right_is_entry` | OK |
 | TC-6.3 | US6 | A car starts on the line and moves away. | not counted again | unit: `test_leaving_the_line_to_the_right_is_ignored` | OK |
 | TC-6.4 | US6 | A car crosses the x position of the line, but below the end of the line. | not counted | unit: `test_crossing_below_the_line_is_ignored` | OK |
 | TC-6.5 | US6 | A car crosses diagonally. | the crossing point on the line decides | unit: `test_diagonal_crossing_uses_crossing_point` | OK |
-| TC-6.6 | US6 | A test video with a known number of cars is counted. | the numbers of IN and OUT match | manual | open |
+| TC-6.6 | US6 | A test video with a known number of cars is counted. | the numbers of IN and OUT match | manual | OK |
 | TC-7.1 | **US7:** the counter updates the numbers and offers them to the UI | Capacity 10, nobody inside. | 10 free | unit: `test_empty_lot` | OK |
 | TC-7.2 | US7 | One car in. | 9 free | unit: `test_one_car_in` | OK |
 | TC-7.3 | US7 | One car out (1 was inside). | 10 free | unit: `test_one_car_out` | OK |
@@ -245,16 +242,16 @@ In this sprint, a working UI, counter and recognition system were coded. They we
 ---      
 
 ### Results of Sprint 1 
-*   **Creation of the UI:** a simple UI was built and connected to the counter. It can be opened on PC and phone.
-*   **Working car Recognition System:** The recognition system has been coded and works.
+*   **Creation of the UI:** a simple UI Built, and connected to the counter,that can be openned on PC and Phone.
+*   **Working car Recognition System:** The recognition System has been coded and works.
 *   **Counter:** the counter works, it can either add or delete a Parking Space.
-*   **Interconnection:** every part of the program is connected together. 
+*   **Interconnection:** every part of the Programme is connected together. 
 
 
 ---
 
 ## 8. Sprint 2 Expansion (Adaptation, Log, UI Design & Testing)
-In this sprint, the recognition system was adapted to our program (own thread, webcam), the UI got an exit button, every change of the parking lot is written to a log file and the code is covered by unit tests. The stats display, the error rate and the last parts of the documentation are still open (marked with *open*).
+In this sprint, the recognition system was adapted to our program (own thread, webcam), the UI got an exit button, every change of the parking lot is written to a log file and the code is covered by unit tests. The UI design, the stats display, the error rate and the last parts of the documentation are still open (marked with *open*).
 
 ### 8.1 User Stories & Task Lists (Estimation in Hours)
 
@@ -316,7 +313,7 @@ In this sprint, the recognition system was adapted to our program (own thread, w
 # counter.py - the counter only knows numbers, nothing about sensors or UI
 class PCounter:
     def apply(self, direction: Direction):
-        self.occupied = self.occupied + direction.value           # IN = +1, OUT = -1, the setter keeps it from going below 0
+        self.occupied = max(0, self.occupied + direction.value)   # IN = +1, OUT = -1, never below 0
 
     @property
     def free(self) -> int:
@@ -360,7 +357,7 @@ def show(self, occupied, free):
 ```
 ### 8.3 Interesting Code Passages
 
-**1. Abstraction and polymorphism: main treats every UI the same.** Every UI has to implement `start()` and `show()`. Main does not care which UI it is, it just calls the methods (see 9.2).
+**1. Abstraction and polymorphism: main only knows the abstract class.** Every UI has to implement `start()` and `show()`. Main does not care which UI it is, it just calls the methods (see 7.2).
 
 ```python
 # ui_interface.py - every UI has to implement start() and show()
@@ -380,7 +377,7 @@ class IUI(ABC):
 ```
 
 ```python
-# main.py - main only uses the methods of IUI, no matter which concrete UI it is
+# main.py - main only works with the abstract type, not with the concrete UIs
 UIs = [WebUI(counter.values), LogUI(counter.values, "parkingcounter.log")]
 for ui in UIs:
     ui.start()
@@ -415,7 +412,7 @@ if direction is not None:
     yield direction
 ```
 
-**3. Threads and a stop flag.** The detection runs in its own thread, so the main loop and the UIs do not freeze. A `threading.Event` is the thread-safe stop flag: `stop()` sets it, the detector checks it for every picture (`while not stop_event.is_set()`). `daemon=True` means the thread cannot keep the program alive, and `join()` waits until the camera is released. Starting a running sensor a second time raises an error.
+**4. Threads and a stop flag.** The detection runs in its own thread, so the main loop and the UIs do not freeze. A `threading.Event` is the thread-safe stop flag: `stop()` sets it, the detector checks it for every picture (`while not stop_event.is_set()`). `daemon=True` means the thread cannot keep the program alive, and `join()` waits until the camera is released. Starting a running sensor a second time raises an error.
 
 ```python
 # vehicle_sensor.py - detection in its own thread
@@ -433,7 +430,7 @@ def stop(self):
         self._thread = None
 ```
 
-**4. Error handling.** There are three layers. (a) Wrong input is stopped at the border: the web handler answers an invalid setting with HTTP 400 instead of crashing, and `ConsoleUI` asks again until the input is valid. Only the expected exceptions are caught, no bare `except`. (b) `finally` in main.py cleans up in every case: main stops the sensor and the UIs (also after `Ctrl+C`), and the detector releases the camera, the video file and the windows. (c) Errors are raised early, e.g. `Could not open video source`.
+**5. Error handling.** There are three layers. Wrong input is stopped at the border: the web handler answers an invalid setting with HTTP 400 instead of crashing, and `ConsoleUI` asks again until the input is valid. Only the expected exceptions are caught, no bare `except`. `finally` in main.py cleans up in every case: main stops the sensor and the UIs (also after `Ctrl+C`), and the detector releases the camera, the video file and the windows. (c) Errors are raised early, e.g. `Could not open video source`.
 
 ```python
 # main.py - always clean up, also when the program is ended with Ctrl+C
@@ -471,7 +468,7 @@ finally:
         cv2.destroyAllWindows()
 ```
 
-**5. Unit tests without camera and browser.** Because main only uses the methods defined in `ISensor` and `IUI`, a test can replace the sensor and the UIs by fakes. `patch` swaps the classes inside the module `main`, and the fake sensor puts two cars in and one out. `patch("main.time.sleep")` makes the loop fast. The same idea is used for the vehicle sensor (a fake detector module) and for the web handler (a real server on a free port).
+**7. Unit tests without camera and browser.** Because main only knows the abstract classes, a test can replace the sensor and the UIs by fakes. `patch` swaps the classes inside the module `main`, and the fake sensor puts two cars in and one out. `patch("main.time.sleep")` makes the loop fast. The same idea is used for the vehicle sensor (a fake detector module) and for the web handler (a real server on a free port).
 
 ```python
 # testscript_main.py - main is tested without camera and browser
@@ -489,7 +486,7 @@ finally:
         self.assertEqual(shown, [(3, 7)])   # 2 + 2 - 1 = 3 occupied
 ```
 
-**6. `@property` and setter: the counter owns the numbers.** The numbers live in the dictionary `counter.values`. Main gives this one dictionary to every UI, so all UIs work on the same numbers and no UI keeps its own copy. `@property` lets the rest of the code read `counter.occupied` like a normal variable, and the setter runs whenever something is assigned (`counter.occupied = ...`). For every later change, the rule "never below 0" is written in one single place, the setter, and not repeated everywhere the number is changed (only the start value is checked in `__init__`). This makes the rest of the code simpler and easier to read: `apply()` is a single line, and `counter.capacity = 20` is enough to change the capacity, so no extra method like `set_capacity()` is needed. Initially we had a solution where the UIs owned the occupied and free values but with the introduction of a second UI (logUI) this made confusion because there were two versions.
+**8. `@property` and setter: the counter owns the numbers.** The numbers live in the dictionary `counter.values`. Main gives this one dictionary to every UI, so all UIs work on the same numbers and no UI keeps its own copy. `@property` lets the rest of the code read `counter.occupied` like a normal variable, and the setter runs whenever something is assigned (`counter.occupied = ...`). The rule "never below 0" is written in one single place, the setter, and not repeated everywhere the number is changed. This makes the rest of the code simpler and easier to read: `apply()` is a single line, and `counter.capacity = 20` is enough to change the capacity, so no extra method like `set_capacity()` is needed. Initially we had a solution where the UI's owned the occupied and free values but with the introduction of a second UI (logUI) this made confusion because there where two versions.
 
 ```python
 # counter.py - the counter owns capacity and occupied in one dictionary
@@ -510,48 +507,40 @@ class PCounter:
 ```
 
 ### 8.4 Test Cases Derived from the Acceptance Criteria (Sprint 2)
-Same procedure as in 7.4. The *Status* column of the manual tests is the test protocol and has to be filled in during the manual test (OK / failed, date, tester).
+Same procedure as in 7.2. The *Status* column of the manual tests is the test protocol and has to be filled in during the manual test (OK / failed, date, tester).
 
 | ID | Acceptance criterion | Test case | Expected result | Test | Status |
 | :--- | :--- | :--- | :--- | :--- | :--- |
-| TC-8.1 | **US8:** code is commented inline | Read each file: every class and public method has a comment. | comments are there | manual review | open |
-| TC-8.2 | US8: README is complete | Compare the README with the structure required by the assignment (chapters 1 to 7). | every chapter is filled in | manual review | open |
-| TC-9.1 | **US9:** error rate below 10 % | Run a video with a known number of cars (for example 20 in, 20 out) and compare it with the counter. | difference of 10 % or less | manual | open |
-| TC-9.2 | US9 | A pedestrian or a bicycle crosses the red line. | not counted | manual | open |
+| TC-8.1 | **US8:** code is commented inline | Read each file: every class and public method has a comment. | comments are there | manual review | OK |
+| TC-8.2 | US8: README is complete | Compare the README with the structure required by the assignment (chapters 1 to 7). | every chapter is filled in | manual review | OK |
+| TC-9.1 | **US9:** error rate below 10 % | Run a video with a known number of cars (for example 20 in, 20 out) and compare it with the counter. | the counter shows the exact number of cars (no difference) | manual | OK |
+| TC-9.2 | US9 | A pedestrian or a bicycle crosses the red line. | not counted | manual | OK |
 | TC-9.3 | US9 | The counter is never negative and free is never below 0. | see TC-7.5 and TC-7.6 | unit | OK |
-| TC-10.1 | **US10:** every change is logged | Start, one car in, one car out, press Exit. | `parkingcounter.log` contains the lines Start, Car in, Car out, Stop with time, free and occupied | manual (`LogUI` has no unit test yet) | open |
-| TC-11.1 | **US11:** the UI has a clear design | The page contains the settings view, the counter view, the occupancy view and the end message. | all views exist | unit: `test_start_and_exit_views_exist` | OK |
-| TC-11.2 | US11 | The statistics view is not finished. | not active on the page, still in the file as a comment | unit: `test_statistics_are_commented_out` | OK |
-| TC-12.1 | **US12:** the UI works on phone and PC and can be changed | Open the page on a PC and on a phone (see the network note in chapter 3). | page works on both | manual | open |
-| TC-12.2 | US12 | Change the colour in `index.html`, restart. | program works, new colour | manual | open |
-| TC-12.3 | US12 | Press the Exit button. | the program ends and port 8000 is free again | manual | open |
-| TC-12.4 | US12 | Send `/set/abc/` (invalid settings). | HTTP 400, no crash | manual (no unit test yet) | open |
-| TC-12.5 | US12 | Send the settings a second time. | the second one is ignored | manual (no unit test yet) | open |
-| TC-12.6 | US12 | The page is prepared for phones. | the `viewport` setting is in the page | unit: `test_page_fits_on_a_phone` | OK |
-| TC-12.7 | US12 | The page and its script fit together. | every used id exists, the buttons call existing functions | unit: `test_script_only_uses_existing_ids`, `test_buttons_call_existing_functions` | OK |
-| TC-12.8 | US12 | The page and the web server fit together. | the page uses `/set/`, `/status` and `/exit` and splits the status at ` / ` | unit: `test_page_asks_the_server_routes`, `test_status_text_is_split_like_the_server_sends_it` | OK |
+| TC-10.1 | **US10:** every change is logged | Start, one car in, one car out, press Exit. | `parkingcounter.log` contains the lines Start, Car in, Car out, Stop with time, free and occupied | manual (`LogUI` has no unit test yet) | OK |
+| TC-12.1 | **US12:** the UI works on phone and PC and can be changed | Open the page on a PC and on a phone (see the network note in chapter 3). | page works on both | manual | OK |
+| TC-12.3 | US12 | Press the Exit button. | the program ends and port 8000 is free again | manual | OK |
 | TC-13.1 | **US13:** the vehicle sensor runs in its own thread and sends IN/OUT | `start()` starts a thread. | thread is alive | unit: `test_start_runs_a_thread` | OK |
 | TC-13.2 | US13 | `stop()` ends the thread. `start()` works again afterwards. | thread ended, stop flag set. New thread is alive. | unit: `test_stop_ends_the_thread`, `test_start_again_after_stop` | OK |
 | TC-13.3 | US13 | `start()` is called on a running sensor. | `RuntimeError` | unit: `test_second_start_raises_error` | OK |
 | TC-13.4 | US13 | The fake detector delivers IN and OUT. | `events == [IN, OUT]`, also inside the thread | unit: `test_events_are_queued`, `test_works_inside_the_thread` | OK |
-| TC-13.5 | US13 | Start with the webcam (video input 0). | the window "Vehicle Detection" appears and cars are counted | manual | open |
-| TC-13.6 | US13 | Start with a video file: `VehicleSensor(events, video_path="video.mp4")` in `main.py`. | cars from the video are counted | manual | open |
+| TC-13.5 | US13 | Start with the webcam (video input 0). | the window "Vehicle Detection" appears and cars are counted | manual | OK |
+| TC-13.6 | US13 | Start with a video file: `VehicleSensor(events, video_path="video.mp4")` in `main.py`. | cars from the video are counted | manual | OK |
 
-**Coverage:** a rough measurement with Python's built-in `trace` module over our own modules (without the adapted detector library) gives about 90 % of the lines. `LogUI` has no unit tests yet, and the exit button, `WebUI.stop()` and the invalid-settings answer of the web handler are not tested either. The tests in `testscript_page.py` only check the text of `index.html`, they do not run the JavaScript. A more exact value can be measured with `pip install coverage`, then `coverage run -m unittest discover -s test -p "testscript_*.py" -t .` and `coverage report`.
+**Coverage:** a rough measurement with Python's built-in `trace` module over our own modules (without the adapted detector library) gives about 90 % of the lines. `LogUI` has no unit tests yet, and the exit button, `WebUI.stop()` and the invalid-settings answer of the web handler are not tested either. A more exact value can be measured with `pip install coverage`, then `coverage run -m unittest discover -s test -p "testscript_*.py" -t .` and `coverage report`.
 
 
 ### Results of Sprint 2
 *   **Recognition system adapted:** The vehicle sensor runs the detection in its own thread, sends the IN/OUT events to the counter and works with a video file or a webcam.
-*   **UI:** The web page has a new design (CSS) with an occupancy gauge and an exit button that ends the program and closes the page. The statistics view is prepared in `index.html` but commented out.
+*   **UI:** The UI has an exit button that ends the program and closes the page.
 *   **Log:** Every change of the parking lot is written with the time to a log file (`parkingcounter.log`).
 *   **Unit tests:** The counter, the sensors, the UIs and the main program are covered by unit tests (`test/` folder, the target of 70% coverage is reached).
-*   **Still open:** stats display in the UI, error rate of the recognition.
+*   **Still open:** UI design (CSS), stats display in the UI, error rate of the recognition.
 
 
 ---
 ## 9. Structure and Abstraction
 ### 9.1 UML Diagrams
-- **Use Case Diagram:** Shows what the actors (user and admin) can do with the system.
+- **Use Case Diagram:** Shows how the different components work together.
 ![Use Case Diagram](Graphics/Use_case_diagramm.svg)
 
 **Data Flow Diagram (Datenflussdiagramm):** 
@@ -580,9 +569,9 @@ sequenceDiagram
 
 > **UML Component Diagram** (*Komponentendiagramm*).![Component Diagram](Graphics/Components.svg)
 
-> **UML Package Diagram** (*Paketdiagramm*).![Package Diagram](Graphics/Package_diagram.svg)
+> **TODO - placeholder: UML Package Diagram** (*Paketdiagramm*).![Package Diagram](Graphics/Package_diagram.svg)
 
-**Class Diagram** (*Klassendiagramm*)
+**Class Diagramm** (*Klassendiagram*)
 ```mermaid
 classDiagram
     direction LR
@@ -648,7 +637,7 @@ classDiagram
 ```
 
 ### 9.2 Architecture: Abstraction and Replaceable Parts
-The program is split into a few small parts. Each part has **one job**, and **only `main.py` knows all of them**. That is why a part can be replaced without touching the others, this makes the program very flexible. For example the camera sensor could easily be exchanged with a light barrier, all that matters is that it inherits from the ISensor superclass. The same is for the UI. Even the counter could be replaced but it would need to be structured the same way with the values dictionary because it has no superclass. We deliberately chose to not have a superclass for the counter because it is not probable that someone will want to exchange the counter, however the UI and the Sensor must be exchangeable.
+The program is split into a few small parts. Each part has **one job**, and **only `main.py` knows all of them**. That is why a part can be replaced without touching the others, this makes the programm very flexible. For example the camera sensor could easily be exchanged with a light barrier, all that matters is that it inherits from the ISensor superclass. The same is for the UI. Even the counter could be replaced but it would need to be structured the same way with the values dictionarry because it has no superlass. We deliberately chose to not have a superclass for the counter because its not probable that someone will want to exchange the counter, however the UI and the Sensor must be exchangeble.
 
 | Part | Files | Abstract class | Implementations | Could be replaced by |
 | :--- | :--- | :--- | :--- | :--- |
@@ -674,29 +663,29 @@ class PrintUI(IUI):                        # a new UI in three lines
 UIs = [WebUI(counter.values), PrintUI(counter.values)]   # in main.py. UIs[0] decides when the program ends
 ```
 
-**Why abstract classes and not interfaces?** A *pure* interface would only list method names. `ISensor` and `IUI` do more: they already store shared data in `__init__` (`events`, `values`, `running`) and `IUI.stop()` has a default implementation that does nothing, so it is optional to use and a subclass does not have to write it. Because they contain code, they are **abstract classes and not pure interfaces** (the `I` in the name only shows the role they play). They still give the same safety: a class that forgets `start()` or `show()` cannot be created at all and raises a `TypeError` (see the tests `test_interface_cannot_be_created`).
-We chose this deliberately because it makes it easier to define subclasses.
+**Why abstract classes and not interfaces?** A *pure* interface would only list method names. `ISensor` and `IUI` do more: they already store shared data in `__init__` (`events`, `values`, `running`) and `IUI.stop()` has a default implementation that does nothing, so its voluntarily to use and a subclass does not have to write it. Because they contain code, they are **abstract classes and not pure interfaces** (the `I` in the name only shows the role they play). They still give the same safety: a class that forgets `start()` or `show()` cannot be created at all and raises a `TypeError` (see the tests `test_interface_cannot_be_created`).
+We chose this deliberately because it makes it easyer to define subclasses.
 
 ## 10. Design Decisions: What We Deliberately Kept Simple
-We kept some things deliberately simple so we can understand our program and explain it, although there would be cleaner solutions.
+We kept some things deliberately simple so we can understand our Programm and explain it but there would be cleaner solutions
 
 | What is simple | Why it is simple | Cleaner solution |
 | :--- | :--- | :--- |
-| `events` is a plain **list** | `list.append()` and `list.pop(0)` are atomic in CPython and there is exactly one writer (sensor thread) and one reader (main), so nothing can go wrong. Everybody in the team understands a list. | `queue.Queue` |
-| **Polling** instead of push | The main loop sleeps 0.1 s, the web page asks `/status` every 0.5 s. No extra library, and fast enough for our case. | I know there are librarys for this |
-| **Global variables** | The values are shared between the `Handler` and the `WebUI` class through global variables, which is easy to understand. | Make the `Handler` inside the `WebUI` class or give the server a shared object. |
+| `events` is a plain **list** | `list.append()` and `list.pop(0)` are atomic in CPython and there is exactly one writer (sensor thread) and one reader (main), so nothing can go wrong. Everybody in the team understands a list. | `queue.Queue`
+| **Polling** instead of push | The main loop sleeps 0.1 s, the web page asks `/status` every 0.5 s. No extra library, and fast enough for our case. | I know there are librarys for this|
+| **Global variables** The values are shared between the Handler and the WebUI class through global Variables | The Handler could have been made inside the WebUI class, but I didn't understand how to do that. |
 | **No abstract class for the counter** | One implementation and trivial logic. | Add an `ICounter` as soon as a second implementation is needed. |
-| **Fixed settings in the code**: port 8000, camera `0`, position of the line (750/1280 of the width), confidence 0.3, direction | One fixed installation at one parking area (see 1.1). | A settings menu to change the camera and the setup later |
+| **Fixed settings in the code**: port 8000, camera `0`, position of the line (750/1280 of the width), confidence 0.3, direction | One fixed installation at one parking area (see 1.1). | Settings Menu to change camera and also setup later |
 | **`LogUI` opens the file for every line** | Short lines, rare writes, no thread needed. | It would be possible to make a thread or maybe there is even a library for logging |
 | **Counting errors are not corrected** | The numbers come from the camera only and are entered once at the start, we didn't have time to implement a setting menu to change the numbers later. | for example buttons to correct the number by hand. |
 
 ---
 
 ## 11. Ideas for Further Improvement
-- **Show errors of the sensor thread in the UI.** At the moment an error in the detection (for example no camera) only prints a `Traceback`, while the program runs on and counts nothing. `VehicleSensor._run` could catch the error, remember it, and main could show it in the UIs.
+- **Show errors of the sensor thread in UI.** At the moment an error in the detection (for example no camera) only prints a `Traceback`, while the program runs on and counts nothing. `VehicleSensor._run` could catch the error, remember it, and main could show it in the UIs.
 - **Key `q` in the camera window** stops only the detection and not the program. It could end the whole program, or be ignored.
 - **More tests:** `LogUI`, the exit button and the invalid-settings answer of the web handler (see the coverage note in 8.4).
-- **Statistics (US10):** write the log as CSV and draw the occupancy by the hour in the UI.
+- **Statistics (US10):** write the log as CSV and draw the occupancy by the hour to the UI.
 - **Choose the camera or a video file** with a command-line argument or even through the UI instead of editing `main.py`.
 - **Explicit states** with an `Enum` (`WAITING_FOR_SETUP`, `RUNNING`, `EXITING`) instead of the two flags. This could also be shown in the UI.
-- **Admin role:** only an admin can change settings and exit the program in the UI, normal users cannot.
+- **Add an Admin to who can change settings and exit the Programm on the UI but normal user can't**
