@@ -196,7 +196,7 @@ In this sprint, a working UI, Counter, Recognition system was coded. they were a
 **Data Flow Diagram (Datenflussdiagramm):** 
 
 ![Datenflussdiagramm](Graphics/Datenflussdriagramm.svg)
-- **Sequence Diagram:** Visualizes the event loop between sensor/camera, counter, and UI.
+- **Sequence Diagram:** Visualizes the event loop between sensor/camera, counter, and UI. (This is not after UML standard but just for a better understanding.)
 
 ```mermaid
 sequenceDiagram
@@ -217,46 +217,11 @@ sequenceDiagram
     M->>U: stop()
 ```
 
-> **TODO - placeholder: UML Component Diagram** (*Komponentendiagramm*). `Graphics/Components.drawio` already exists, but it still shows the old attribute names (`.capacity`, `.start_capacity`, `set_capacity()`). Update it for the `values` dictionary, export it as `Graphics/Components.svg` and activate the line below.
->
-> <!-- ![Component Diagram](Graphics/Components.svg) -->
+> **UML Component Diagram** (*Komponentendiagramm*).![Component Diagram](Graphics/Components.svg)
 
-> **TODO - placeholder: UML Package Diagram** (*Paketdiagramm*). Suggested packages: `main` (glue), `counter`, UI (`ui_interface`, `htmlUI`, `dummy_ui`, `logui`), sensor (`sensor_interface`, `sensor`, `vehicle_sensor`), detection library (`CarDetector&Counter_Branch`) and `test`. Export it as `Graphics/Package_diagram.svg` and activate the line below.
->
-> <!-- ![Package Diagram](Graphics/Package_diagram.svg) -->
+> **TODO - placeholder: UML Package Diagram** (*Paketdiagramm*).![Package Diagram](Graphics/Package_diagram.svg)
 
-**Status of the diagrams:** Use Case (done, above), Data Flow (done, above), Sequence (done, above), Class (done, see 7.4), State (done, see 8.3), Component (placeholder), Package (placeholder).
-
-### 7.3 Architecture: Abstraction and Replaceable Parts
-The program is split into a few small parts. Each part has **one job**, and **only `main.py` knows all of them**. That is why a part can be replaced without touching the others, this makes the programm very flexible. For example the camera sensor could easily be exchanged with a light barrier, all that matters is that it inherits from the ISensor superclass. The same is for the UI. Even the counter could be replaced but it would need to be structured the same way with the values dictionarry because it has no superlass. We deliberately chose to not have a superclass for the counter because its not probable that someone will want to exchange the counter, however the UI and the Sensor must be exchangeble.
-
-| Part | Files | Abstract class | Implementations | Could be replaced by |
-| :--- | :--- | :--- | :--- | :--- |
-| **Sensor** (detects cars) | `sensor_interface.py`, `sensor.py`, `vehicle_sensor.py` | `ISensor` | `VehicleSensor` (webcam or video + YOLO + DeepSORT), `Sensor` (random IN/OUT events, for development without a camera) | any other sensor, e.g. induction loop, light barrier, ultrasonic sensors |
-| **UI** (shows the result) | `ui_interface.py`, `htmlUI.py`, `dummy_ui.py`, `logui.py` | `IUI` | `WebUI` (browser page), `ConsoleUI` (console, also used as dummy UI during development), `LogUI` (log file) | display with LEDs, mobile app, ... |
-| **Counter** (counts) | `counter.py` | none | `PCounter` | nothing (only one implementation, the logic is trivial) |
-| **Main** (connects) | `main.py` | none | none | creates the parts, hands them over and runs the loop |
-| **Detection library** | `CarDetector&Counter_Branch/...` | none | adapted *Real-Time Vehicle Detection, Tracking and Counting* code | hidden behind `VehicleSensor`, the rest of the program does not know it |
-
-**Who knows whom:**
-- The **sensor** only knows the `events` list and the enum `Direction`. It appends `Direction.IN` or `Direction.OUT`.
-- The **counter** only knows `Direction` (`IN` = +1, `OUT` = -1).
-- A **UI** only knows the `values` dictionary (`capacity`, `occupied`) that it gets when it is created, and the numbers that main passes to `show(occupied, free)`.
-- **Main** connects everything: the `events` list (sensor to main), the `values` dictionary (counter and UIs share it) and `show()` (main to UIs).
-
-**How to replace or add a part:** write a class that inherits from `ISensor` or `IUI`, implement the abstract methods and change the one line in `main.py` where the part is created. Example for a new UI:
-
-```python
-class PrintUI(IUI):                        # a new UI in three lines
-    def start(self): pass
-    def show(self, occupied, free): print(free)
-
-UIs = [WebUI(counter.values), PrintUI(counter.values)]   # in main.py. UIs[0] decides when the program ends
-```
-
-**Why abstract classes and not interfaces?** A *pure* interface would only list method names. `ISensor` and `IUI` do more: they already store shared data in `__init__` (`events`, `values`, `running`) and `IUI.stop()` has a default implementation that does nothing, so its voluntarily to use and a subclass does not have to write it. Because they contain code, they are **abstract classes and not pure interfaces** (the `I` in the name only shows the role they play). They still give the same safety: a class that forgets `start()` or `show()` cannot be created at all and raises a `TypeError` (see the tests `test_interface_cannot_be_created`).
-We chose this deliberately because it makes it easyer to define subclasses.
-
+**Class Diagramm** (*Klassendiagram*)
 ```mermaid
 classDiagram
     direction LR
@@ -319,6 +284,37 @@ classDiagram
     PCounter ..> Direction : uses value
     IUI .. PCounter : share the same values dict
 ```
+**Status of the diagrams:** Use Case (done, above), Data Flow (done, above), Sequence (done, above), Class (done, see 7.4), State (done, see 8.3), Component (placeholder), Package (placeholder).
+
+### 7.3 Architecture: Abstraction and Replaceable Parts
+The program is split into a few small parts. Each part has **one job**, and **only `main.py` knows all of them**. That is why a part can be replaced without touching the others, this makes the programm very flexible. For example the camera sensor could easily be exchanged with a light barrier, all that matters is that it inherits from the ISensor superclass. The same is for the UI. Even the counter could be replaced but it would need to be structured the same way with the values dictionarry because it has no superlass. We deliberately chose to not have a superclass for the counter because its not probable that someone will want to exchange the counter, however the UI and the Sensor must be exchangeble.
+
+| Part | Files | Abstract class | Implementations | Could be replaced by |
+| :--- | :--- | :--- | :--- | :--- |
+| **Sensor** (detects cars) | `sensor_interface.py`, `sensor.py`, `vehicle_sensor.py` | `ISensor` | `VehicleSensor` (webcam or video + YOLO + DeepSORT), `Sensor` (random IN/OUT events, for development without a camera) | any other sensor, e.g. induction loop, light barrier, ultrasonic sensors |
+| **UI** (shows the result) | `ui_interface.py`, `htmlUI.py`, `dummy_ui.py`, `logui.py` | `IUI` | `WebUI` (browser page), `ConsoleUI` (console, also used as dummy UI during development), `LogUI` (log file) | display with LEDs, mobile app, ... |
+| **Counter** (counts) | `counter.py` | none | `PCounter` | nothing (only one implementation, the logic is trivial) |
+| **Main** (connects) | `main.py` | none | none | creates the parts, hands them over and runs the loop |
+| **Detection library** | `CarDetector&Counter_Branch/...` | none | adapted *Real-Time Vehicle Detection, Tracking and Counting* code | hidden behind `VehicleSensor`, the rest of the program does not know it |
+
+**Who knows whom:**
+- The **sensor** only knows the `events` list and the enum `Direction`. It appends `Direction.IN` or `Direction.OUT`.
+- The **counter** only knows `Direction` (`IN` = +1, `OUT` = -1).
+- A **UI** only knows the `values` dictionary (`capacity`, `occupied`) that it gets when it is created, and the numbers that main passes to `show(occupied, free)`.
+- **Main** connects everything: the `events` list (sensor to main), the `values` dictionary (counter and UIs share it) and `show()` (main to UIs).
+
+**How to replace or add a part:** write a class that inherits from `ISensor` or `IUI`, implement the abstract methods and change the one line in `main.py` where the part is created. Example for a new UI:
+
+```python
+class PrintUI(IUI):                        # a new UI in three lines
+    def start(self): pass
+    def show(self, occupied, free): print(free)
+
+UIs = [WebUI(counter.values), PrintUI(counter.values)]   # in main.py. UIs[0] decides when the program ends
+```
+
+**Why abstract classes and not interfaces?** A *pure* interface would only list method names. `ISensor` and `IUI` do more: they already store shared data in `__init__` (`events`, `values`, `running`) and `IUI.stop()` has a default implementation that does nothing, so its voluntarily to use and a subclass does not have to write it. Because they contain code, they are **abstract classes and not pure interfaces** (the `I` in the name only shows the role they play). They still give the same safety: a class that forgets `start()` or `show()` cannot be created at all and raises a `TypeError` (see the tests `test_interface_cannot_be_created`).
+We chose this deliberately because it makes it easyer to define subclasses.
 
 ### 7.4 Test Cases Derived from the Acceptance Criteria (Sprint 1)
 
