@@ -624,17 +624,18 @@ classDiagram
         IN
         OUT
     }
-    ISensor <|-- Sensor
-    ISensor <|-- VehicleSensor
-    IUI <|-- WebUI
-    IUI <|-- ConsoleUI
-    IUI <|-- LogUI
-    main ..> ISensor : creates and starts
-    main ..> IUI : creates, starts, show()
-    main ..> PCounter : creates, apply()
+    main ..> VehicleSensor : creates and starts
+    VehicleSensor --|> ISensor
+    Sensor --|> ISensor
     ISensor ..> Direction : events contain
+    main ..> PCounter : creates, apply()
     PCounter ..> Direction : uses value
-    IUI .. PCounter : share the same values dict
+    main ..> WebUI : creates, starts, show()
+    main ..> LogUI : creates, starts, show()
+    WebUI --|> IUI
+    LogUI --|> IUI
+    ConsoleUI --|> IUI
+    PCounter .. IUI : share the same values dict
 ```
 
 ### 9.2 Architecture: Abstraction and Replaceable Parts
