@@ -87,13 +87,13 @@ Requirements are described in the form of user stories with acceptance criteria,
 ---
 
 ## 5. Release Plan with Expansion Stages
--   **Release 0.1 (Sprint 0):**
+-   **Sprint 0:**
     - Hardware setup,
     - Project structure on GitHub,
     - HelloWorld,
     - Clean Management setup (requirements, priorities, timeline).
 
--   **Release 0.2 (Sprint 1 - MVP):**
+-   **Sprint 1 - MVP:**
     - Building the Project base (interfaces),
     - Starting the construction of the backend of the User Interface,
     - Building a Counter,
@@ -101,7 +101,6 @@ Requirements are described in the form of user stories with acceptance criteria,
     
 -   **Release 1.0 (Sprint 2):**
     - Develop the CSS code for the UI,
-    - New feature: Stats on the occupation of the parking lot,
     - Testing the software.
 
 ---
@@ -189,133 +188,6 @@ In this sprint, a working UI, Counter, Recognition system was coded. they were a
 | Task 1.14 | Build the central system that connects the counter to everything with a class. | 3.0 |
 
 ---
-### 7.2 UML Diagrams
-- **Use Case Diagram:** Shows how the different components work together.
-![Use Case Diagram](Graphics/Use_case_diagramm.svg)
-
-**Data Flow Diagram (Datenflussdiagramm):** 
-
-![Datenflussdiagramm](Graphics/Datenflussdriagramm.svg)
-- **Sequence Diagram:** Visualizes the event loop between sensor/camera, counter, and UI. (This is not after UML standard but just for a better understanding.)
-
-```mermaid
-sequenceDiagram
-    participant S as VehicleSensor (own thread)
-    participant E as events (list)
-    participant M as main loop
-    participant C as PCounter
-    participant U as UIs (WebUI, LogUI)
-    Note over M,U: Start: every UI.start() (WebUI waits for the setup form), then sensor.start()
-    S->>E: append(Direction.IN or OUT) when a car crosses the red line
-    loop every 0.1 s while UIs[0].running
-        M->>E: pop(0) while events is not empty
-        M->>C: apply(direction)
-        M->>U: show(occupied, free) for every UI
-        U-->>C: a UI may change capacity in the shared values dict
-    end
-    M->>S: stop()
-    M->>U: stop()
-```
-
-> **UML Component Diagram** (*Komponentendiagramm*).![Component Diagram](Graphics/Components.svg)
-
-> **TODO - placeholder: UML Package Diagram** (*Paketdiagramm*).![Package Diagram](Graphics/Package_diagram.svg)
-
-**Class Diagramm** (*Klassendiagram*)
-```mermaid
-classDiagram
-    direction LR
-    class main {
-        <<module>>
-        +main()
-    }
-    class ISensor {
-        <<abstract>>
-        +events : list
-        +start()*
-        +stop()*
-    }
-    class Sensor {
-        random IN/OUT events
-    }
-    class VehicleSensor {
-        camera + YOLO + DeepSORT
-        +video_path
-        +display
-    }
-    class IUI {
-        <<abstract>>
-        +values : dict
-        +running : bool
-        +start()*
-        +show(occupied, free)*
-        +stop()
-    }
-    class WebUI {
-        browser page
-    }
-    class ConsoleUI {
-        console
-    }
-    class LogUI {
-        log file
-    }
-    class PCounter {
-        +values : dict
-        +capacity
-        +occupied
-        +free
-        +apply(direction)
-    }
-    class Direction {
-        <<enumeration>>
-        IN
-        OUT
-    }
-    ISensor <|-- Sensor
-    ISensor <|-- VehicleSensor
-    IUI <|-- WebUI
-    IUI <|-- ConsoleUI
-    IUI <|-- LogUI
-    main ..> ISensor : creates and starts
-    main ..> IUI : creates, starts, show()
-    main ..> PCounter : creates, apply()
-    ISensor ..> Direction : events contain
-    PCounter ..> Direction : uses value
-    IUI .. PCounter : share the same values dict
-```
-**Status of the diagrams:** Use Case (done, above), Data Flow (done, above), Sequence (done, above), Class (done, see 7.4), State (done, see 8.3), Component (placeholder), Package (placeholder).
-
-### 7.3 Architecture: Abstraction and Replaceable Parts
-The program is split into a few small parts. Each part has **one job**, and **only `main.py` knows all of them**. That is why a part can be replaced without touching the others, this makes the programm very flexible. For example the camera sensor could easily be exchanged with a light barrier, all that matters is that it inherits from the ISensor superclass. The same is for the UI. Even the counter could be replaced but it would need to be structured the same way with the values dictionarry because it has no superlass. We deliberately chose to not have a superclass for the counter because its not probable that someone will want to exchange the counter, however the UI and the Sensor must be exchangeble.
-
-| Part | Files | Abstract class | Implementations | Could be replaced by |
-| :--- | :--- | :--- | :--- | :--- |
-| **Sensor** (detects cars) | `sensor_interface.py`, `sensor.py`, `vehicle_sensor.py` | `ISensor` | `VehicleSensor` (webcam or video + YOLO + DeepSORT), `Sensor` (random IN/OUT events, for development without a camera) | any other sensor, e.g. induction loop, light barrier, ultrasonic sensors |
-| **UI** (shows the result) | `ui_interface.py`, `htmlUI.py`, `dummy_ui.py`, `logui.py` | `IUI` | `WebUI` (browser page), `ConsoleUI` (console, also used as dummy UI during development), `LogUI` (log file) | display with LEDs, mobile app, ... |
-| **Counter** (counts) | `counter.py` | none | `PCounter` | nothing (only one implementation, the logic is trivial) |
-| **Main** (connects) | `main.py` | none | none | creates the parts, hands them over and runs the loop |
-| **Detection library** | `CarDetector&Counter_Branch/...` | none | adapted *Real-Time Vehicle Detection, Tracking and Counting* code | hidden behind `VehicleSensor`, the rest of the program does not know it |
-
-**Who knows whom:**
-- The **sensor** only knows the `events` list and the enum `Direction`. It appends `Direction.IN` or `Direction.OUT`.
-- The **counter** only knows `Direction` (`IN` = +1, `OUT` = -1).
-- A **UI** only knows the `values` dictionary (`capacity`, `occupied`) that it gets when it is created, and the numbers that main passes to `show(occupied, free)`.
-- **Main** connects everything: the `events` list (sensor to main), the `values` dictionary (counter and UIs share it) and `show()` (main to UIs).
-
-**How to replace or add a part:** write a class that inherits from `ISensor` or `IUI`, implement the abstract methods and change the one line in `main.py` where the part is created. Example for a new UI:
-
-```python
-class PrintUI(IUI):                        # a new UI in three lines
-    def start(self): pass
-    def show(self, occupied, free): print(free)
-
-UIs = [WebUI(counter.values), PrintUI(counter.values)]   # in main.py. UIs[0] decides when the program ends
-```
-
-**Why abstract classes and not interfaces?** A *pure* interface would only list method names. `ISensor` and `IUI` do more: they already store shared data in `__init__` (`events`, `values`, `running`) and `IUI.stop()` has a default implementation that does nothing, so its voluntarily to use and a subclass does not have to write it. Because they contain code, they are **abstract classes and not pure interfaces** (the `I` in the name only shows the role they play). They still give the same safety: a class that forgets `start()` or `show()` cannot be created at all and raises a `TypeError` (see the tests `test_interface_cannot_be_created`).
-We chose this deliberately because it makes it easyer to define subclasses.
-
 ### 7.4 Test Cases Derived from the Acceptance Criteria (Sprint 1)
 
 | ID | Acceptance criterion | Test case | Expected result | Test | Status |
@@ -388,16 +260,16 @@ In this sprint, the recognition system was adapted to our program (own thread, w
 | Task-ID | Description | Effort (h) |
 | :--- | :--- | :--- |
 | Task 2.11 | Find or build a graphic template for the UI to look good and be easy to understand. *(optional)* | TBD |
-| Task 2.12 | Write the CSS code (at the moment there is only a short style block to center the page). *(optional)* | TBD |
+| Task 2.12 | Write the CSS code | 1 |
 
 **User Story US12:** *"As a coder, I want to build an easy to modify UI, so that I can adapt it to every device and every use."*
 
 | Task-ID | Description | Effort (h) |
 | :--- | :--- | :--- |
-| Task 2.13 | Find a way to build a UI that can work on both phone and PC: a web page served by a small web server in the local network. | TBD |
-| Task 2.14 | Keep the page (`index.html`) separate from the Python code, so the design can be changed without touching the program. | TBD |
-| Task 2.15 | Add an exit button that ends the program and closes the page. | TBD |
-| Task 2.16 | Check the page on different devices and adapt it if necessary. | TBD |
+| Task 2.13 | Find a way to build a UI that can work on both phone and PC: a web page served by a small web server in the local network. | 1 |
+| Task 2.14 | Keep the page (`index.html`) separate from the Python code, so the design can be changed without touching the program. | Already Done |
+| Task 2.15 | Add an exit button that ends the program and closes the page. | 1.5 |
+| Task 2.16 | Check the page on different devices and adapt it if necessary. | 2 |
 
 **User Story US13:** *"As a coder, I want to adapt the recognition system for it to work with our program."*
 
@@ -668,8 +540,134 @@ Same procedure as in 7.5. The *Status* column of the manual tests is the test pr
 
 
 ---
+## 9. Structure and Abstraction
+### 9.1 UML Diagrams
+- **Use Case Diagram:** Shows how the different components work together.
+![Use Case Diagram](Graphics/Use_case_diagramm.svg)
 
-## 9. Design Decisions: What We Deliberately Kept Simple
+**Data Flow Diagram (Datenflussdiagramm):** 
+
+![Datenflussdiagramm](Graphics/Datenflussdriagramm.svg)
+- **Sequence Diagram:** Visualizes the event loop between sensor/camera, counter, and UI. (This is not after UML standard but just for a better understanding.)
+
+```mermaid
+sequenceDiagram
+    participant S as VehicleSensor (own thread)
+    participant E as events (list)
+    participant M as main loop
+    participant C as PCounter
+    participant U as UIs (WebUI, LogUI)
+    Note over M,U: Start: every UI.start() (WebUI waits for the setup form), then sensor.start()
+    S->>E: append(Direction.IN or OUT) when a car crosses the red line
+    loop every 0.1 s while UIs[0].running
+        M->>E: pop(0) while events is not empty
+        M->>C: apply(direction)
+        M->>U: show(occupied, free) for every UI
+        U-->>C: a UI may change capacity in the shared values dict
+    end
+    M->>S: stop()
+    M->>U: stop()
+```
+
+> **UML Component Diagram** (*Komponentendiagramm*).![Component Diagram](Graphics/Components.svg)
+
+> **TODO - placeholder: UML Package Diagram** (*Paketdiagramm*).![Package Diagram](Graphics/Package_diagram.svg)
+
+**Class Diagramm** (*Klassendiagram*)
+```mermaid
+classDiagram
+    direction LR
+    class main {
+        <<module>>
+        +main()
+    }
+    class ISensor {
+        <<abstract>>
+        +events : list
+        +start()*
+        +stop()*
+    }
+    class Sensor {
+        random IN/OUT events
+    }
+    class VehicleSensor {
+        camera + YOLO + DeepSORT
+        +video_path
+        +display
+    }
+    class IUI {
+        <<abstract>>
+        +values : dict
+        +running : bool
+        +start()*
+        +show(occupied, free)*
+        +stop()
+    }
+    class WebUI {
+        browser page
+    }
+    class ConsoleUI {
+        console
+    }
+    class LogUI {
+        log file
+    }
+    class PCounter {
+        +values : dict
+        +capacity
+        +occupied
+        +free
+        +apply(direction)
+    }
+    class Direction {
+        <<enumeration>>
+        IN
+        OUT
+    }
+    ISensor <|-- Sensor
+    ISensor <|-- VehicleSensor
+    IUI <|-- WebUI
+    IUI <|-- ConsoleUI
+    IUI <|-- LogUI
+    main ..> ISensor : creates and starts
+    main ..> IUI : creates, starts, show()
+    main ..> PCounter : creates, apply()
+    ISensor ..> Direction : events contain
+    PCounter ..> Direction : uses value
+    IUI .. PCounter : share the same values dict
+```
+
+### 9.2 Architecture: Abstraction and Replaceable Parts
+The program is split into a few small parts. Each part has **one job**, and **only `main.py` knows all of them**. That is why a part can be replaced without touching the others, this makes the programm very flexible. For example the camera sensor could easily be exchanged with a light barrier, all that matters is that it inherits from the ISensor superclass. The same is for the UI. Even the counter could be replaced but it would need to be structured the same way with the values dictionarry because it has no superlass. We deliberately chose to not have a superclass for the counter because its not probable that someone will want to exchange the counter, however the UI and the Sensor must be exchangeble.
+
+| Part | Files | Abstract class | Implementations | Could be replaced by |
+| :--- | :--- | :--- | :--- | :--- |
+| **Sensor** (detects cars) | `sensor_interface.py`, `sensor.py`, `vehicle_sensor.py` | `ISensor` | `VehicleSensor` (webcam or video + YOLO + DeepSORT), `Sensor` (random IN/OUT events, for development without a camera) | any other sensor, e.g. induction loop, light barrier, ultrasonic sensors |
+| **UI** (shows the result) | `ui_interface.py`, `htmlUI.py`, `dummy_ui.py`, `logui.py` | `IUI` | `WebUI` (browser page), `ConsoleUI` (console, also used as dummy UI during development), `LogUI` (log file) | display with LEDs, mobile app, ... |
+| **Counter** (counts) | `counter.py` | none | `PCounter` | nothing (only one implementation, the logic is trivial) |
+| **Main** (connects) | `main.py` | none | none | creates the parts, hands them over and runs the loop |
+| **Detection library** | `CarDetector&Counter_Branch/...` | none | adapted *Real-Time Vehicle Detection, Tracking and Counting* code | hidden behind `VehicleSensor`, the rest of the program does not know it |
+
+**Who knows whom:**
+- The **sensor** only knows the `events` list and the enum `Direction`. It appends `Direction.IN` or `Direction.OUT`.
+- The **counter** only knows `Direction` (`IN` = +1, `OUT` = -1).
+- A **UI** only knows the `values` dictionary (`capacity`, `occupied`) that it gets when it is created, and the numbers that main passes to `show(occupied, free)`.
+- **Main** connects everything: the `events` list (sensor to main), the `values` dictionary (counter and UIs share it) and `show()` (main to UIs).
+
+**How to replace or add a part:** write a class that inherits from `ISensor` or `IUI`, implement the abstract methods and change the one line in `main.py` where the part is created. Example for a new UI:
+
+```python
+class PrintUI(IUI):                        # a new UI in three lines
+    def start(self): pass
+    def show(self, occupied, free): print(free)
+
+UIs = [WebUI(counter.values), PrintUI(counter.values)]   # in main.py. UIs[0] decides when the program ends
+```
+
+**Why abstract classes and not interfaces?** A *pure* interface would only list method names. `ISensor` and `IUI` do more: they already store shared data in `__init__` (`events`, `values`, `running`) and `IUI.stop()` has a default implementation that does nothing, so its voluntarily to use and a subclass does not have to write it. Because they contain code, they are **abstract classes and not pure interfaces** (the `I` in the name only shows the role they play). They still give the same safety: a class that forgets `start()` or `show()` cannot be created at all and raises a `TypeError` (see the tests `test_interface_cannot_be_created`).
+We chose this deliberately because it makes it easyer to define subclasses.
+
+## 10. Design Decisions: What We Deliberately Kept Simple
 We kept some things deliberately simple so we can understand our Programm and explain it but there would be cleaner solutions
 
 | What is simple | Why it is simple | Cleaner solution |
@@ -684,7 +682,7 @@ We kept some things deliberately simple so we can understand our Programm and ex
 
 ---
 
-## 10. Ideas for Further Improvement
+## 11. Ideas for Further Improvement
 - **Show errors of the sensor thread in UI.** At the moment an error in the detection (for example no camera) only prints a `Traceback`, while the program runs on and counts nothing. `VehicleSensor._run` could catch the error, remember it, and main could show it in the UIs.
 - **Key `q` in the camera window** stops only the detection and not the program. It could end the whole program, or be ignored.
 - **More tests:** `LogUI`, the exit button and the invalid-settings answer of the web handler (see the coverage note in 8.4).
