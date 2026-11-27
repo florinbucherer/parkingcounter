@@ -412,30 +412,6 @@ if direction is not None:
     yield direction
 ```
 
-#Todo - Fix this
-**3. Loading the detector and lazy imports.** The detector lies in a folder whose name (`CarDetector&Counter_Branch`) is not a valid Python name, so it cannot be imported normally. `importlib` loads it from its file path. The heavy libraries (OpenCV, YOLO, TensorFlow) are imported inside the function, so they are only loaded when the detection really starts. This keeps `import vehicle_sensor` fast, and the unit tests replace the whole detector with a small fake module.
-
-```python
-# vehicle_sensor.py - load the detector from a file path
-module_path = TRACKING_DIR / "object_detection_tracking.py"
-spec = importlib.util.spec_from_file_location(
-    "parkingcounter_object_detection_tracking", module_path
-)
-detector = importlib.util.module_from_spec(spec)
-spec.loader.exec_module(detector)
-```
-
-```python
-# object_detection_tracking.py - heavy libraries are imported when the detection starts
-def detect_crossings(
-    # ...
-) -> Iterator[Event]:
-    """Track vehicles and yield the direction returned for each line crossing."""
-    import cv2
-    import numpy as np
-    from ultralytics import YOLO
-```
-
 **4. Threads and a stop flag.** The detection runs in its own thread, so the main loop and the UIs do not freeze. A `threading.Event` is the thread-safe stop flag: `stop()` sets it, the detector checks it for every picture (`while not stop_event.is_set()`). `daemon=True` means the thread cannot keep the program alive, and `join()` waits until the camera is released. Starting a running sensor a second time raises an error.
 
 ```python
@@ -559,7 +535,7 @@ Same procedure as in 7.5. The *Status* column of the manual tests is the test pr
 ### Results of Sprint 2
 *   **Recognition system adapted:** The vehicle sensor runs the detection in its own thread, sends the IN/OUT events to the counter and works with a video file or a webcam.
 *   **UI:** The UI has an exit button that ends the program and closes the page.
-*   **Log:** Every change of the parking lot is written with the time to a log file (`parkingcounter_log.txt`).
+*   **Log:** Every change of the parking lot is written with the time to a log file (`parkingcounter.log`).
 *   **Unit tests:** The counter, the sensors, the UIs and the main program are covered by unit tests (`test/` folder, the target of 70% coverage is reached).
 *   **Still open:** UI design (CSS), stats display in the UI, error rate of the recognition.
 
